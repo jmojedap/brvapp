@@ -9,6 +9,8 @@ import 'package:brave_app/Post/screens/posts_feed_screen.dart';
 import 'package:brave_app/Events/screens/reservation_screen.dart';
 import 'package:brave_app/Events/screens/calendar_screen.dart';
 import 'package:brave_app/Follow/screens/followers_screen.dart';
+import 'package:brave_app/Product/screens/restaurant_screen.dart';
+import 'package:brave_app/Product/screens/restaurant_product_screen.dart';
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {
@@ -39,6 +41,9 @@ class MyApp extends StatelessWidget {
         "/reservation_screen": (BuildContext context) => ReservationScreen(),
         "/calendar_screen": (BuildContext context) => CalendarScreen(),
         "/follow_followers": (BuildContext context) => FollowersScreen(),
+        "/restaurant_screen": (BuildContext context) => RestaurantScreen(),
+        "/restaurant_product_screen": (BuildContext context) =>
+            RestaurantProductScreen(),
       },
     );
   }

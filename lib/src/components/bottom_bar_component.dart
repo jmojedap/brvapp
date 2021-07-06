@@ -17,7 +17,7 @@ class _BottomBarComponentState extends State<BottomBarComponent> {
     '/posts_feed_screen',
     '/general_search',
     '/calendar_screen',
-    '/posts_feed_screen',
+    '/restaurant_screen',
     '/profile',
   ];
 
