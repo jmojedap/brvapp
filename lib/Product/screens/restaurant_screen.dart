@@ -158,7 +158,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(8.0)),
-        color: Colors.redAccent,
+        color: Colors.green[100],
       ),
     );
 

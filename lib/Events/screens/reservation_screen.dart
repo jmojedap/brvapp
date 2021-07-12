@@ -20,8 +20,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
   Map _horarioSelection = {'title': '[ HORA ]', 'subtitle': ''};
 
   final List<Map> _dias = [
-    {'title': 'Hoy', 'subtitle': 'Jueves, 7 de julio', 'enabled': true},
-    {'title': 'Mañana', 'subtitle': 'Viernes, 8 de julio', 'enabled': true},
+    {'title': 'Hoy', 'subtitle': 'Viernes, 9 de julio', 'enabled': true},
+    {'title': 'Mañana', 'subtitle': 'Sábado, 10 de julio', 'enabled': true},
   ];
 
   final List<Map> _zonas = [
@@ -131,19 +131,27 @@ class _ReservationScreenState extends State<ReservationScreen> {
     return stepConfirm();
   }
 
-  Widget _cupos() {
+  Widget _cupos(int qtyCupos) {
     final List<Widget> cupos = [];
 
-    cupos.add(Text('Cupos: '));
-    cupos.add(CircleAvatar(backgroundColor: Colors.red, radius: 4));
-    cupos.add(CircleAvatar(backgroundColor: Colors.red, radius: 4));
-    cupos.add(CircleAvatar(backgroundColor: Colors.red, radius: 4));
-    cupos.add(CircleAvatar(backgroundColor: Colors.red, radius: 4));
-    cupos.add(CircleAvatar(backgroundColor: Colors.red, radius: 4));
-    cupos.add(CircleAvatar(backgroundColor: Colors.red, radius: 4));
-    cupos.add(CircleAvatar(backgroundColor: Colors.black26, radius: 4));
-    cupos.add(CircleAvatar(backgroundColor: Colors.black26, radius: 4));
-    cupos.add(CircleAvatar(backgroundColor: Colors.black26, radius: 4));
+    Color cupoColor = Colors.black12;
+
+    cupos.add(Text(qtyCupos.toString() + ' cupos '));
+    for (var i = 0; i < 10; i++) {
+      if (i >= (10 - qtyCupos)) {
+        cupoColor = Colors.green[400];
+      }
+
+      cupos.add(
+        Container(
+          margin: EdgeInsets.only(right: 1),
+          child: CircleAvatar(
+            backgroundColor: cupoColor,
+            radius: 4,
+          ),
+        ),
+      );
+    }
 
     return Row(
       children: cupos,
@@ -163,8 +171,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
           child: ListTile(
             leading: _icono,
             title: Text(_dias[index]['title']),
-            //subtitle: Text(_dias[index]['subtitle']),
-            subtitle: _cupos(),
+            subtitle: Text(_dias[index]['subtitle']),
             enabled: _dias[index]['enabled'],
             selected: index == _keyDia,
             onTap: () {
@@ -224,7 +231,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
           child: ListTile(
             leading: _icono,
             title: Text(_horarios[index]['hora']),
-            subtitle: Text(_horarios[index]['cupos'].toString() + ' cupos'),
+            //subtitle: Text(_horarios[index]['cupos'].toString() + ' cupos'),
+            subtitle: _cupos(_horarios[index]['cupos']),
             enabled: _horarios[index]['enabled'],
             selected: index == _keyHorario,
             onTap: () {

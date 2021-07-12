@@ -15,7 +15,7 @@ class _BottomBarComponentState extends State<BottomBarComponent> {
 
   final List<String> routes = [
     '/posts_feed_screen',
-    '/general_search',
+    '/users_search',
     '/calendar_screen',
     '/restaurant_screen',
     '/profile',

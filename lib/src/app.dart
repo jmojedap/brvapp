@@ -1,10 +1,10 @@
-import 'package:brave_app/src/screens/general_search_screen.dart';
-import 'package:brave_app/src/screens/login_screen.dart';
 import 'package:brave_app/src/screens/start_screen.dart';
-import 'package:brave_app/src/screens/signup_screen.dart';
+import 'package:brave_app/Accounts/screens/signup_screen.dart';
+import 'package:brave_app/Accounts/screens/login_screen.dart';
 import 'package:brave_app/User/screens/profile_screen.dart';
 import 'package:brave_app/User/screens/profile_edit_screen.dart';
 import 'package:brave_app/User/screens/subscription_status_screen.dart';
+import 'package:brave_app/User/screens/users_search.dart';
 import 'package:brave_app/Post/screens/posts_feed_screen.dart';
 import 'package:brave_app/Events/screens/reservation_screen.dart';
 import 'package:brave_app/Events/screens/calendar_screen.dart';
@@ -24,15 +24,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
         brightness: Brightness.light,
-        primaryColor: Colors.green,
-        accentColor: Colors.green[800],
+        primaryColor: Color(0xff458F2E),
+        accentColor: Color(0xff60C83C),
+        fontFamily: 'Rubik',
       ),
-      initialRoute: '/profile',
+      initialRoute: '/login',
       routes: {
         "/start": (BuildContext context) => StartScreen(),
         "/login": (BuildContext context) => LoginScreen(),
         "/signup": (BuildContext context) => SignUpScreen(),
-        "/general_search": (BuildContext context) => GeneralSearchScreen(),
+        "/users_search": (BuildContext context) => UsersSearch(),
         "/profile": (BuildContext context) => ProfileScreen(),
         "/profile_edit": (BuildContext context) => ProfileEditScreen(),
         "/subscription_status": (BuildContext context) =>
