@@ -1,14 +1,36 @@
 import 'package:brave_app/src/components/bottom_bar_component.dart';
 import 'package:brave_app/src/components/drawer_component.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   //const ProfileScreen({Key key}) : super(key: key);
+  @override
+  _ProfileScreenState createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  String _userPicture =
+      'https://www.bravebackend.com/resources/20210516/images/users/user.png';
 
   final TextStyle _counterStyle = TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: 18.0,
   );
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData();
+  }
+
+  void _loadProfileData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _userPicture = (prefs.getString('userPicture') ??
+          'https://www.bravebackend.com/resources/20210516/images/users/user.png');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +75,8 @@ class ProfileScreen extends StatelessWidget {
         Column(
           children: [
             CircleAvatar(
-              backgroundImage: AssetImage('assets/img/lina.jpg'),
+              backgroundColor: Colors.white,
+              backgroundImage: NetworkImage(_userPicture),
               radius: 50,
             ),
             SizedBox(

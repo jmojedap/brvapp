@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
@@ -11,7 +12,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  Future<int> _loginValidation;
+  Future<Map> _loginValidation;
   bool _loading = false;
 
   String _emailValue;
@@ -67,6 +68,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _emailField() {
     return TextFormField(
+      keyboardType: TextInputType.emailAddress,
+      //initialValue: 'linalop@pacarina.net',
       onSaved: (value) {
         _emailValue = value;
       },
@@ -84,6 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _passwordField() {
     return TextFormField(
+      //initialValue: 'brave2021',
       decoration: InputDecoration(labelText: 'Contraseña'),
       obscureText: true,
       onSaved: (value) {
@@ -109,7 +113,10 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 20,
               width: 20,
               margin: const EdgeInsets.only(right: 20),
-              child: CircularProgressIndicator(),
+              child: Theme(
+                data: Theme.of(context).copyWith(accentColor: Colors.green[50]),
+                child: new CircularProgressIndicator(),
+              ),
             ),
           Text('Iniciar sesión'),
         ],
@@ -136,43 +143,45 @@ class _LoginScreenState extends State<LoginScreen> {
 //--------------------------------------------------------------------------
 
   void _login(BuildContext context) {
-    //Aún no se ha enviado
-    if (!_loading) {
-      //Validar formulario
-      if (_loginFormKey.currentState.validate()) {
-        _loginFormKey.currentState.save();
+    setState(() {
+      _loading = true;
+    });
 
-        _loginValidation = _validateLogin();
+    //Validar casillas del formulario
+    if (_loginFormKey.currentState.validate()) {
+      _loginFormKey.currentState.save();
 
-        _loginValidation.then((value) => {print('Value: ' + value.toString())});
+      //Validar login
+      _loginValidation = _validateLogin();
 
-        setState(() {
-          _loading = true;
-        });
-      }
+      //Al recibir respuesta de validación
+      _loginValidation.then(
+        (validationData) {
+          /*print('Login validation status: ' +
+              validationData['status'].toString());*/
+          if (validationData['status'] == 1) {
+            _loadSharedPreferences(validationData);
+            Navigator.of(context)
+                .pushNamedAndRemoveUntil('/profile', (route) => false);
+          } else {
+            _showInvalidLoginDialog(validationData);
+          }
+        },
+      );
     }
-    /*Navigator.of(context)
-        .pushNamedAndRemoveUntil('/posts_feed_screen', (route) => false);*/
   }
 
-  Future<int> _validateLogin() async {
-    print(_emailValue);
-    print(_passwordValue);
-
+  //Enviar datos de formulario y recibir datos de validación
+  Future<Map> _validateLogin() async {
     var urlUsers =
         Uri.parse('https://www.bravebackend.com/api/accounts/validate_login/');
     var response = await http.post(
       urlUsers,
-      body: {
-        'username': _emailValue,
-        'password': _passwordValue,
-      },
+      body: {'username': _emailValue, 'password': _passwordValue},
     );
 
     if (response.statusCode == 200) {
-      final responseBody = jsonDecode(response.body);
-      print(responseBody);
-      return response.statusCode;
+      return jsonDecode(response.body);
     } else {
       throw Exception('Error al solicitar listado de usuarios');
     }
@@ -181,5 +190,34 @@ class _LoginScreenState extends State<LoginScreen> {
   //Ir a la pantalla de registro
   void _showRegister(BuildContext context) {
     Navigator.of(context).pushNamedAndRemoveUntil('/signup', (route) => false);
+  }
+
+  //Establecer datos de cuenta de usuario en SharedPreferences
+  void _loadSharedPreferences(validationData) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    prefs.setString(
+        'userDisplayName', validationData['user_info']['display_name']);
+    prefs.setString('userId', validationData['user_info']['user_id']);
+    prefs.setString('userPicture', validationData['user_info']['picture']);
+    prefs.setString('userEmail', validationData['user_info']['email']);
+  }
+
+  //Mostrar diálogo con error de validación
+  void _showInvalidLoginDialog(validationData) {
+    setState(() {
+      _loading = false;
+    });
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Inicio de sesión',
+          style: TextStyle(color: Colors.lightBlue),
+        ),
+        content: Text(validationData['messages'].join('. ')),
+      ),
+    );
   }
 }
