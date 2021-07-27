@@ -1,7 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class StartScreen extends StatelessWidget {
+class StartScreen extends StatefulWidget {
   //const StartScreen({Key? key}) : super(key: key);
+
+  @override
+  _StartScreenState createState() => _StartScreenState();
+}
+
+class _StartScreenState extends State<StartScreen> {
+  String _userId = '';
+  //String _routeDestination = '/login';
+
+  @override
+  void initState() {
+    super.initState();
+    _checkSession();
+  }
+
+  /* Cargar datos de usuario de SharedPreferences */
+  void _checkSession() async {
+    print('Check Session');
+    final prefs = await SharedPreferences.getInstance();
+    _userId = (prefs.getString('userDisplayName') ?? '');
+    if (_userId == '') {
+      _goToNextScreen('/login');
+    } else {
+      _goToNextScreen('/profile');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,15 +45,19 @@ class StartScreen extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                '/login',
-                (route) => false,
-              );
+              _goToNextScreen('/login');
             },
             child: Text('Continuar'),
           ),
         ],
       ),
+    );
+  }
+
+  void _goToNextScreen(String destinationRoute) {
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      destinationRoute,
+      (route) => false,
     );
   }
 }

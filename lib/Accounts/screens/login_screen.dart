@@ -12,6 +12,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+// Variables
+//--------------------------------------------------------------------------
   Future<Map> _loginValidation;
   bool _loading = false;
 
@@ -20,6 +22,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final _loginFormKey = GlobalKey<FormState>();
 
+// Builder
+//--------------------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,6 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
 // Widgets
 //--------------------------------------------------------------------------
 
+  //Campo correo electrónico
   Widget _emailField() {
     return TextFormField(
       keyboardType: TextInputType.emailAddress,
@@ -85,6 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  //Campo contraseña
   Widget _passwordField() {
     return TextFormField(
       //initialValue: 'brave2021',
@@ -102,6 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  //Botón envío formulario
   Widget _submitButton() {
     return ElevatedButton(
       onPressed: () => {_login(context)},
@@ -124,6 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  //Información bajo formulario
   Widget _bottomInfo() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -142,6 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
 // Funciones
 //--------------------------------------------------------------------------
 
+  //Realizar la validación de login de usuario
   void _login(BuildContext context) {
     setState(() {
       _loading = true;
@@ -199,8 +208,15 @@ class _LoginScreenState extends State<LoginScreen> {
     prefs.setString(
         'userDisplayName', validationData['user_info']['display_name']);
     prefs.setString('userId', validationData['user_info']['user_id']);
-    prefs.setString('userPicture', validationData['user_info']['picture']);
     prefs.setString('userEmail', validationData['user_info']['email']);
+
+    String defaultUserPicture =
+        'https://www.bravebackend.com/resources/static/images/users/user.png';
+    if (validationData['user_info']['picture'].length > 0) {
+      prefs.setString('userPicture', validationData['user_info']['picture']);
+    } else {
+      prefs.setString('userPicture', defaultUserPicture);
+    }
   }
 
   //Mostrar diálogo con error de validación

@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         accentColor: Color(0xff60C83C),
         fontFamily: 'Rubik',
       ),
-      initialRoute: '/login',
+      initialRoute: '/start',
       routes: {
         "/start": (BuildContext context) => StartScreen(),
         "/login": (BuildContext context) => LoginScreen(),

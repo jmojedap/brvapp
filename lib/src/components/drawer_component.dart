@@ -9,10 +9,9 @@ class DrawerComponent extends StatefulWidget {
 }
 
 class _DrawerComponentState extends State<DrawerComponent> {
-  //TODO: Actualizar url por defecto
   Map<String, String> _userInfo = {
     'userId': '',
-    'dislayName': '',
+    'displayName': '',
     'email': '',
     'picture':
         'https://www.bravebackend.com/resources/20210516/images/users/user.png',
@@ -30,7 +29,8 @@ class _DrawerComponentState extends State<DrawerComponent> {
     setState(() {
       _userInfo['displayName'] = (prefs.getString('userDisplayName') ?? '');
       _userInfo['email'] = (prefs.getString('userEmail') ?? '');
-      _userInfo['picture'] = prefs.getString('userPicture');
+      _userInfo['picture'] = (prefs.getString('userPicture') ??
+          'https://www.bravebackend.com/resources/20210516/images/users/user.png');
     });
   }
 
