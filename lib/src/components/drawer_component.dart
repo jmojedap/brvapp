@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:brave_app/Config/constants.dart';
 
 class DrawerComponent extends StatefulWidget {
   //const DrawerComponent({Key? key}) : super(key: key);
@@ -13,8 +14,7 @@ class _DrawerComponentState extends State<DrawerComponent> {
     'userId': '',
     'displayName': '',
     'email': '',
-    'picture':
-        'https://www.bravebackend.com/resources/20210516/images/users/user.png',
+    'picture': kDefaultUserPicture,
   };
 
   @override
@@ -29,8 +29,8 @@ class _DrawerComponentState extends State<DrawerComponent> {
     setState(() {
       _userInfo['displayName'] = (prefs.getString('userDisplayName') ?? '');
       _userInfo['email'] = (prefs.getString('userEmail') ?? '');
-      _userInfo['picture'] = (prefs.getString('userPicture') ??
-          'https://www.bravebackend.com/resources/20210516/images/users/user.png');
+      _userInfo['picture'] =
+          (prefs.getString('userPicture') ?? kDefaultUserPicture);
     });
   }
 

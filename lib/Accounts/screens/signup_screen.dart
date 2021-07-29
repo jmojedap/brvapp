@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:brave_app/Config/constants.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
@@ -206,8 +207,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   //Enviar datos de formulario y recibir datos de validación
   Future<Map> _sendRegister() async {
-    var urlUsers =
-        Uri.parse('https://www.bravebackend.com/api/accounts/register/');
+    var urlUsers = Uri.parse(kUrlApi + 'accounts/register/');
     var response = await http.post(
       urlUsers,
       body: {
@@ -236,13 +236,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     prefs.setString('userDisplayName', userInfo['display_name']);
     prefs.setString('userId', userInfo['user_id']);
     prefs.setString('userEmail', userInfo['email']);
+    prefs.setString('username', userInfo['username']);
 
-    String defaultUserPicture =
-        'https://www.bravebackend.com/resources/static/images/users/user.png';
     if (userInfo['picture'].length > 0) {
       prefs.setString('userPicture', userInfo['picture']);
     } else {
-      prefs.setString('userPicture', defaultUserPicture);
+      prefs.setString('userPicture', kDefaultUserPicture);
     }
   }
 

@@ -1,3 +1,4 @@
+import 'package:brave_app/Config/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -169,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
           /*print('Login validation status: ' +
               validationData['status'].toString());*/
           if (validationData['status'] == 1) {
-            _loadSharedPreferences(validationData);
+            _loadSharedPreferences(validationData['user_info']);
             Navigator.of(context)
                 .pushNamedAndRemoveUntil('/profile', (route) => false);
           } else {
@@ -182,8 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   //Enviar datos de formulario y recibir datos de validación
   Future<Map> _validateLogin() async {
-    var urlUsers =
-        Uri.parse('https://www.bravebackend.com/api/accounts/validate_login/');
+    var urlUsers = Uri.parse(kUrlApi + 'accounts/validate_login/');
     var response = await http.post(
       urlUsers,
       body: {'username': _emailValue, 'password': _passwordValue},
@@ -202,20 +202,18 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   //Establecer datos de cuenta de usuario en SharedPreferences
-  void _loadSharedPreferences(validationData) async {
+  void _loadSharedPreferences(userInfo) async {
     final prefs = await SharedPreferences.getInstance();
 
-    prefs.setString(
-        'userDisplayName', validationData['user_info']['display_name']);
-    prefs.setString('userId', validationData['user_info']['user_id']);
-    prefs.setString('userEmail', validationData['user_info']['email']);
+    prefs.setString('userDisplayName', userInfo['display_name']);
+    prefs.setString('userId', userInfo['user_id']);
+    prefs.setString('userEmail', userInfo['email']);
+    prefs.setString('username', userInfo['username']);
 
-    String defaultUserPicture =
-        'https://www.bravebackend.com/resources/static/images/users/user.png';
-    if (validationData['user_info']['picture'].length > 0) {
-      prefs.setString('userPicture', validationData['user_info']['picture']);
+    if (userInfo['picture'].length > 0) {
+      prefs.setString('userPicture', userInfo['picture']);
     } else {
-      prefs.setString('userPicture', defaultUserPicture);
+      prefs.setString('userPicture', kDefaultUserPicture);
     }
   }
 
