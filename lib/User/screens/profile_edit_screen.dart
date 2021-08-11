@@ -18,19 +18,20 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 //--------------------------------------------------------------------------
 
   Future<Map> _updateResponse;
-  bool _loading = false;
+  //bool _loading = false;
 
   TextEditingController _displayNameController;
   TextEditingController _usernameController;
   TextEditingController _emailController;
 
   final _updateProfileFormKey = GlobalKey<FormState>();
+  final _scaffKey = GlobalKey<ScaffoldState>();
 
 // Obtener datos de usuario por SharedPreferences
 //--------------------------------------------------------------------------
   Map<String, String> _userInfo = {
     'userId': '',
-    'displayName': 'probando',
+    'displayName': '',
     'username': '',
     'email': '',
     'picture': kDefaultUserPicture,
@@ -67,6 +68,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffKey,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
@@ -174,7 +176,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   //Realizar la validación de register de usuario
   void _validateFormSend(BuildContext context) {
     setState(() {
-      _loading = true;
+      //_loading = true;
     });
 
     //Validar casillas del formulario
@@ -193,8 +195,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           if (updateData['status'] == 1) {
             print('CAMBIOS GUARDADOS a ' + updateData['status'].toString());
             _updateSharedPreferences();
+            _showSuccessSnackBar(context);
+            Navigator.of(context).pop();
           } else {
-            print('ERROR DE ACTUALIZACIÓN');
+            print('Error en la actualización');
             _showValidationErrorDialog(updateData['validation_data']);
           }
         },
@@ -233,7 +237,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   //Mostrar diálogo con error de validación
   void _showValidationErrorDialog(validationData) {
     setState(() {
-      _loading = false;
+      //_loading = false;
     });
 
     showDialog(
@@ -246,5 +250,14 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         content: Text(validationData['error']),
       ),
     );
+  }
+
+  // Mostrar SnackBar con resultado de actualización de datos en BackEnd
+  void _showSuccessSnackBar(context) {
+    SnackBar snackBar = SnackBar(
+      content: Text('Cambios guardados'),
+      backgroundColor: Colors.green,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

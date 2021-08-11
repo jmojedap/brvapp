@@ -74,8 +74,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
   void initState() {
     super.initState();
     // Force selection of today on first load, so that the list of today's events gets shown.
-    _handleNewDate(DateTime(
-        DateTime.now().year, DateTime.now().month, DateTime.now().day));
+    _handleNewDate(
+      DateTime(
+        DateTime.now().year,
+        DateTime.now().month,
+        DateTime.now().day,
+      ),
+    );
   }
 
   @override
@@ -87,7 +92,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       body: SafeArea(
         child: Calendar(
           startOnMonday: false,
-          weekDays: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+          weekDays: ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'Do'],
           events: _events,
           isExpandable: true,
           eventDoneColor: Colors.green,
@@ -105,8 +110,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
       drawer: DrawerComponent(),
       bottomNavigationBar: BottomBarComponent(),
       floatingActionButton: FloatingActionButton.extended(
-        icon: Icon(Icons.add),
-        label: Text('Reserva'),
+        icon: Icon(Icons.add, color: Colors.white),
+        label: Text('Reserva', style: TextStyle(color: Colors.white)),
         onPressed: () {
           Navigator.of(context).pushNamed('/reservation_screen');
         },

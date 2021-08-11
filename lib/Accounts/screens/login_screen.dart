@@ -1,6 +1,6 @@
+import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
 import 'package:brave_app/Config/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
@@ -203,18 +203,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   //Establecer datos de cuenta de usuario en SharedPreferences
   void _loadSharedPreferences(userInfo) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    prefs.setString('userDisplayName', userInfo['display_name']);
-    prefs.setString('userId', userInfo['user_id']);
-    prefs.setString('userEmail', userInfo['email']);
-    prefs.setString('username', userInfo['username']);
-
-    if (userInfo['picture'].length > 0) {
-      prefs.setString('userPicture', userInfo['picture']);
-    } else {
-      prefs.setString('userPicture', kDefaultUserPicture);
-    }
+    await UserSimplePreferences.setUserId(userInfo['user_id']);
+    await UserSimplePreferences.setUserDisplayName(userInfo['display_name']);
+    await UserSimplePreferences.setUsername(userInfo['username']);
+    await UserSimplePreferences.setUserEmail(userInfo['email']);
+    await UserSimplePreferences.setUserPicture(userInfo['picture']);
   }
 
   //Mostrar diálogo con error de validación

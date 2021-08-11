@@ -17,15 +17,6 @@ class RestaurantScreen extends StatefulWidget {
 class _RestaurantScreenState extends State<RestaurantScreen> {
   Future<List> futureProducts;
 
-  /*final List<Color> _avatarColors = [
-    Colors.red[700],
-    Colors.purple[700],
-    Colors.blue[700],
-    Colors.yellow[700],
-    Colors.orange[700],
-    Colors.green[700],
-  ];*/
-
   @override
   void initState() {
     super.initState();

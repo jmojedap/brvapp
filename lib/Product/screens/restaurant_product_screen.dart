@@ -56,8 +56,14 @@ class _RestaurantProductScreenState extends State<RestaurantProductScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        icon: Icon(Icons.add),
-        label: Text('Agregar'),
+        icon: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+        label: Text(
+          'Agregar',
+          style: TextStyle(color: Colors.white),
+        ),
         onPressed: () {
           print('Agregando producto');
         },

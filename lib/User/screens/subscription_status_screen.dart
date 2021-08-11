@@ -63,7 +63,7 @@ class SubscriptionStatusScreen extends StatelessWidget {
                       style: TextStyle(fontSize: 18),
                     ),
                     Text(
-                      '14 de Julio de 2021',
+                      '28 sep 2021',
                       style:
                           TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                     ),
