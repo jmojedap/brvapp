@@ -1,9 +1,12 @@
+import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_clean_calendar/flutter_clean_calendar.dart';
 import 'package:flutter_clean_calendar/clean_calendar_event.dart';
 import 'package:brave_app/src/components/bottom_bar_component.dart';
 import 'package:brave_app/src/components/drawer_component.dart';
 import 'package:brave_app/Calendar/models/event_model.dart';
+
+import 'event_screen.dart';
 
 class CalendarScreen extends StatefulWidget {
   @override
@@ -13,23 +16,29 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  Map<DateTime, List<CleanCalendarEvent>> _events = {};
-
+  String userId = UserSimplePreferences.getUserId();
   EventModel eventModel = EventModel();
-  List mapEvents = [];
+
+  Future<Map<DateTime, List<CleanCalendarEvent>>> futureEvents;
+  Map<DateTime, List<CleanCalendarEvent>> mapEvents = {};
 
   @override
   void initState() {
     super.initState();
-    _events = eventModel.getEvents();
+    futureEvents = eventModel.getEvents(userId);
 
-    _handleNewDate(
+    futureEvents.then((response) {
+      mapEvents = response;
+      setState(() {});
+    });
+
+    /*_handleNewDate(
       DateTime(
         DateTime.now().year,
         DateTime.now().month,
         DateTime.now().day,
       ),
-    );
+    );*/
   }
 
   @override
@@ -40,9 +49,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
       ),
       body: SafeArea(
         child: Calendar(
-          startOnMonday: false,
+          startOnMonday: true,
           weekDays: ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'Do'],
-          events: _events,
+          events: mapEvents,
           isExpandable: true,
           eventDoneColor: Colors.green,
           selectedColor: Colors.purple[600],
@@ -53,7 +62,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
           isExpanded: true,
           expandableDateFormat: 'EEEE, dd. MMMM yyyy',
           dayOfWeekStyle: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.w800, fontSize: 11),
+            color: Colors.black,
+            fontWeight: FontWeight.w800,
+            fontSize: 11,
+          ),
+          onEventSelected: _displayEvent,
         ),
       ),
       drawer: DrawerComponent(),
@@ -62,21 +75,23 @@ class _CalendarScreenState extends State<CalendarScreen> {
         icon: Icon(Icons.add, color: Colors.white),
         label: Text('Reserva', style: TextStyle(color: Colors.white)),
         onPressed: () {
-          _getEvents();
-          //Navigator.of(context).pushNamed('/reservation_screen');
+          Navigator.of(context).pushNamed('/reservation_screen');
         },
         backgroundColor: Colors.purple,
       ),
     );
   }
 
-  void _handleNewDate(date) {
+  /*void _handleNewDate(date) {
     print('Date selected: $date');
-  }
+  }*/
 
-  void _getEvents() {
-    _events = eventModel.getEvents();
-    print('Cargando eventos');
-    setState(() {});
+  void _displayEvent(event) {
+    String _eventId = event.location;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => EventScreen(_eventId),
+      ),
+    );
   }
 }

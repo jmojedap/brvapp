@@ -8,6 +8,7 @@ import 'package:brave_app/User/screens/users_search.dart';
 import 'package:brave_app/Post/screens/posts_feed_screen.dart';
 import 'package:brave_app/Calendar/screens/reservation_screen.dart';
 import 'package:brave_app/Calendar/screens/calendar_screen.dart';
+import 'package:brave_app/Calendar/screens/event_screen.dart';
 import 'package:brave_app/Follow/screens/followers_screen.dart';
 import 'package:brave_app/Product/screens/restaurant_screen.dart';
 import 'package:brave_app/Product/screens/restaurant_product_screen.dart';
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
             SubscriptionStatusScreen(),
         "/posts_feed_screen": (BuildContext context) => PostsFeedScreen(),
         "/calendar_screen": (BuildContext context) => CalendarScreen(),
+        "/event_screen": (BuildContext context) => EventScreen('5'),
         "/reservation_screen": (BuildContext context) => ReservationScreen(),
         "/follow_followers": (BuildContext context) => FollowersScreen(),
         "/restaurant_screen": (BuildContext context) => RestaurantScreen(),
