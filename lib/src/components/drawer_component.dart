@@ -47,7 +47,7 @@ class _DrawerComponentState extends State<DrawerComponent> {
               backgroundColor: Colors.white,
             ),
           ),
-          ListTile(
+          /*ListTile(
             title: Text('Inicio'),
             leading: Icon(Icons.home),
             onTap: () => _showHome(context),
@@ -65,7 +65,7 @@ class _DrawerComponentState extends State<DrawerComponent> {
             onTap: () => {
               Navigator.of(context).pushNamed('/calendar_screen'),
             },
-          ),
+          ),*/
           ListTile(
             title: Text('Salir'),
             leading: Icon(Icons.logout),

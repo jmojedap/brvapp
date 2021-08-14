@@ -16,6 +16,7 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
+  bool loading = true;
   String userId = UserSimplePreferences.getUserId();
   EventModel eventModel = EventModel();
 
@@ -29,16 +30,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
     futureEvents.then((response) {
       mapEvents = response;
-      setState(() {});
+      loading = false;
+      setState(() {
+        setContent();
+      });
     });
-
-    /*_handleNewDate(
-      DateTime(
-        DateTime.now().year,
-        DateTime.now().month,
-        DateTime.now().day,
-      ),
-    );*/
   }
 
   @override
@@ -48,26 +44,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         title: Text('Agenda'),
       ),
       body: SafeArea(
-        child: Calendar(
-          startOnMonday: true,
-          weekDays: ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'Do'],
-          events: mapEvents,
-          isExpandable: true,
-          eventDoneColor: Colors.green,
-          selectedColor: Colors.purple[600],
-          todayColor: Colors.green[800],
-          eventColor: Colors.green,
-          locale: 'es_ES',
-          todayButtonText: 'Hoy',
-          isExpanded: true,
-          expandableDateFormat: 'EEEE, dd. MMMM yyyy',
-          dayOfWeekStyle: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.w800,
-            fontSize: 11,
-          ),
-          onEventSelected: _displayEvent,
-        ),
+        child: setContent(),
       ),
       drawer: DrawerComponent(),
       bottomNavigationBar: BottomBarComponent(),
@@ -82,9 +59,36 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  /*void _handleNewDate(date) {
-    print('Date selected: $date');
-  }*/
+  Widget setContent() {
+    if (loading) {
+      return Center(child: CircularProgressIndicator());
+    } else {
+      return calendar();
+    }
+  }
+
+  Widget calendar() {
+    return Calendar(
+      startOnMonday: true,
+      weekDays: ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'Do'],
+      events: mapEvents,
+      isExpandable: true,
+      eventDoneColor: Colors.green,
+      selectedColor: Colors.purple[600],
+      todayColor: Colors.green[800],
+      eventColor: Colors.green,
+      locale: 'es_ES',
+      todayButtonText: 'Hoy',
+      isExpanded: true,
+      expandableDateFormat: 'EEEE, dd. MMMM yyyy',
+      dayOfWeekStyle: TextStyle(
+        color: Colors.black,
+        fontWeight: FontWeight.w800,
+        fontSize: 11,
+      ),
+      onEventSelected: _displayEvent,
+    );
+  }
 
   void _displayEvent(event) {
     String _eventId = event.location;

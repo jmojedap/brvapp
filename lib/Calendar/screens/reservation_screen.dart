@@ -385,29 +385,27 @@ class _ReservationScreenState extends State<ReservationScreen> {
 
   //Widet Subtítulo Trainings, cupos disponibles
   Widget _spotsWidget(int totalSpots, int availableSpots) {
-    final List<Widget> spotsWidgetChildren = [];
+    double takenWidth = 0;
+    double availableWidth = 100;
 
-    Color cupoColor = Colors.black12;
-
-    spotsWidgetChildren.add(Text(availableSpots.toString() + ' cupos '));
-    for (var i = 0; i < totalSpots; i++) {
-      if (i >= (totalSpots - availableSpots)) {
-        cupoColor = Colors.green[400];
-      }
-
-      spotsWidgetChildren.add(
-        Container(
-          margin: EdgeInsets.only(right: 1.5),
-          child: CircleAvatar(
-            backgroundColor: cupoColor,
-            radius: 4,
-          ),
-        ),
-      );
-    }
+    availableWidth = 100 * (availableSpots / totalSpots);
+    takenWidth = 100 - availableWidth;
 
     return Row(
-      children: spotsWidgetChildren,
+      children: [
+        Text(availableSpots.toString() + ' cupos'),
+        SizedBox(width: 10),
+        Container(
+          height: 10,
+          width: takenWidth,
+          color: Colors.purple[700],
+        ),
+        Container(
+          height: 10,
+          width: availableWidth,
+          color: Colors.black12,
+        ),
+      ],
     );
   }
 
@@ -472,7 +470,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
           Text('Reserva confirmada', style: TextStyle(fontSize: 28)),
           ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/calendar_screen', (route) => false);
             },
             child: Text('Ir a calendario'),
           )

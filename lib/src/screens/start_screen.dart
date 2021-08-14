@@ -26,7 +26,7 @@ class _StartScreenState extends State<StartScreen> {
     if (_userId == '') {
       _goToNextScreen('/login');
     } else {
-      _goToNextScreen('/profile');
+      _goToNextScreen('/calendar_screen');
     }
   }
 
@@ -42,12 +42,6 @@ class _StartScreenState extends State<StartScreen> {
           ),
           SizedBox(
             height: 20,
-          ),
-          ElevatedButton(
-            onPressed: () {
-              _goToNextScreen('/login');
-            },
-            child: Text('Continuar'),
           ),
         ],
       ),

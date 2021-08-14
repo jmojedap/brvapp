@@ -15,9 +15,7 @@ class _BottomBarComponentState extends State<BottomBarComponent> {
 
   final List<String> routes = [
     '/posts_feed_screen',
-    '/users_search',
     '/calendar_screen',
-    '/restaurant_screen',
     '/profile',
   ];
 
@@ -45,15 +43,7 @@ class _BottomBarComponentState extends State<BottomBarComponent> {
           title: Text(''),
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.search),
-          title: Text(''),
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.calendar_today_rounded),
-          title: Text(''),
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_bag),
+          icon: Icon(Icons.calendar_today),
           title: Text(''),
         ),
         BottomNavigationBarItem(

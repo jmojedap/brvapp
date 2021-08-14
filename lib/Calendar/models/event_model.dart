@@ -15,6 +15,7 @@ class EventModel {
   //Map con dia -> eventos CCE, para llenar Clear Calendar
   Future<Map<DateTime, List<CleanCalendarEvent>>> getEvents(userId) async {
     var url = Uri.parse(kUrlApi + 'calendar/my_events/' + userId);
+    print(url);
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
