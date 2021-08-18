@@ -18,6 +18,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
 // Variables
 //--------------------------------------------------------------------------
   String userId;
+  String saveReservationError = '';
 
   int _step = 1;
   String titleAppBar = 'Reservar entrenamiento';
@@ -41,9 +42,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
   @override
   void initState() {
     super.initState();
-    _trainingDays = _getTrainingDays();
     userId = UserSimplePreferences.getUserId() ?? '0';
-    print(userId);
+    _trainingDays = _getTrainingDays(userId);
   }
 
 // Constructor Scaffold
@@ -137,6 +137,10 @@ class _ReservationScreenState extends State<ReservationScreen> {
       return stepConfirm();
     } else if (_step == 5) {
       return stepConfirmed();
+    } else if (_step == 11) {
+      return stepError();
+    } else if (_step == 99) {
+      return Center(child: CircularProgressIndicator());
     }
 
     return stepConfirm();
@@ -146,8 +150,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
 //--------------------------------------------------------------------------
 
   //Requerir a API listado días de entrenamiento
-  Future<List<Map>> _getTrainingDays() async {
-    const String urlDays = kUrlApi + 'reservations/get_training_days';
+  Future<List<Map>> _getTrainingDays(String userId) async {
+    final String urlDays = kUrlApi + 'reservations/get_training_days/$userId';
     final response = await http.get(Uri.parse(urlDays));
 
     List<Map> daysList = [];
@@ -158,6 +162,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
       for (var item in responseBody['days']) {
         daysList.add(item);
       }
+      print(daysList);
       return daysList;
     } else {
       throw Exception('Error al solicitar días de entrenamiento');
@@ -188,6 +193,10 @@ class _ReservationScreenState extends State<ReservationScreen> {
     daysList.asMap().forEach(
       (index, item) {
         Icon _icono = Icon(Icons.radio_button_off);
+        String _subtitleText = '';
+        if (item['qty_user_reservations'] > 0) {
+          _subtitleText = 'Ya tienes una reserva';
+        }
         if (index == _keyDay) _icono = Icon(Icons.radio_button_checked);
 
         Widget dayTile = ListTileTheme(
@@ -197,6 +206,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
             leading: _icono,
             title: Text(item['period_name']),
             selected: index == _keyDay,
+            enabled: item['qty_user_reservations'] == 0,
+            subtitle: Text(_subtitleText),
             onTap: () {
               setState(() {
                 _keyDay = index;
@@ -219,10 +230,12 @@ class _ReservationScreenState extends State<ReservationScreen> {
 //------------------------------------------------------------------------------
 
   void _setRooms() {
+    _setStep(99); //Loading indicator
     _roomsFuture = _getRooms(_daySelection['id']);
 
     _roomsFuture.then((data) {
       _rooms = data;
+      print(_rooms);
       _setStep(2);
     });
   }
@@ -231,9 +244,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
   Future<List<Map>> _getRooms(dayId) async {
     final String urlRooms =
         kUrlApi + 'reservations/get_available_rooms/$dayId/$userId';
-    final response = await http.get(Uri.parse(urlRooms));
-
     print(urlRooms);
+    final response = await http.get(Uri.parse(urlRooms));
 
     List<Map> roomsList = [];
 
@@ -254,8 +266,12 @@ class _ReservationScreenState extends State<ReservationScreen> {
     return ListView.builder(
       itemCount: _rooms.length,
       itemBuilder: (BuildContext context, int index) {
-        Icon _icono = Icon(Icons.radio_button_off);
-        if (index == _keyRoom) _icono = Icon(Icons.radio_button_checked);
+        Color _iconColor = Colors.white;
+        if (_rooms[index]['available'] == 1) _iconColor = Colors.black38;
+        Icon _icono = Icon(Icons.radio_button_off, color: _iconColor);
+        if (index == _keyRoom) {
+          _icono = Icon(Icons.radio_button_checked, color: _iconColor);
+        }
         return ListTileTheme(
           selectedTileColor: Colors.green,
           selectedColor: Colors.white,
@@ -296,6 +312,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
 // Paso 3: Selección de Training
 //------------------------------------------------------------------------------
   void _setTrainings() {
+    _setStep(99); //Loading indicator
     _trainingsFuture = _getTrainings(_daySelection['id'], _roomSelection['id']);
 
     _trainingsFuture.then((data) {
@@ -323,35 +340,6 @@ class _ReservationScreenState extends State<ReservationScreen> {
       throw Exception('Error al solicitar listado de entrenamientos');
     }
   }
-
-  //Widget ListView, selección de zona de entrenamiento
-  /*Widget stepTrainings() {
-    return ListView.builder(
-      itemCount: _trainings.length,
-      itemBuilder: (BuildContext context, int index) {
-        Icon _icono = Icon(Icons.radio_button_off);
-        if (index == _keyRoom) _icono = Icon(Icons.radio_button_checked);
-        return ListTileTheme(
-          selectedTileColor: Colors.green,
-          selectedColor: Colors.white,
-          child: ListTile(
-            leading: _icono,
-            title: Text(_rooms[index]['name']),
-            enabled: _rooms[index]['available'] == 1,
-            selected: index == _keyRoom,
-            onTap: () {
-              setState(() {
-                _keyRoom = index;
-                _roomSelection['title'] = _rooms[index]['name'];
-                print(_keyRoom);
-                _setStep(3);
-              });
-            },
-          ),
-        );
-      },
-    );
-  }*/
 
   Widget stepTrainings() {
     return ListView.builder(
@@ -398,7 +386,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
         Container(
           height: 10,
           width: takenWidth,
-          color: Colors.purple[700],
+          color: kBgColors['appSecondary'],
         ),
         Container(
           height: 10,
@@ -416,22 +404,29 @@ class _ReservationScreenState extends State<ReservationScreen> {
       child: Column(
         children: [
           SizedBox(
-            width: 200,
+            width: 180,
             height: 50,
             child: ElevatedButton(
               onPressed: () {
-                //_setStep(5);
+                _setStep(99); //Loading indicator
                 _saveReservationResponse = _saveReservation();
 
                 _saveReservationResponse.then((response) {
+                  print(response);
                   if (response['saved_id'] > 0) {
                     _setStep(5);
+                  } else {
+                    saveReservationError = response['error'];
+                    _setStep(11);
                   }
                 });
               },
               child: Text(
-                'Confirmar reserva',
+                'RESERVAR',
                 style: TextStyle(fontSize: 18),
+              ),
+              style: ElevatedButton.styleFrom(
+                primary: kBgColors['appSecondary'],
               ),
             ),
           ),
@@ -445,11 +440,9 @@ class _ReservationScreenState extends State<ReservationScreen> {
   Future<Map> _saveReservation() async {
     String trainingId = _trainingSelection['id'];
     var url = Uri.parse(kUrlApi + 'reservations/save/$trainingId/$userId');
-    //print(url);
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
-      //print(response.body);
       return jsonDecode(response.body);
     } else {
       throw Exception('Error al guardar reservación');
@@ -459,15 +452,17 @@ class _ReservationScreenState extends State<ReservationScreen> {
 // Paso 5: Mostrar resultado confirmación
 //------------------------------------------------------------------------------
 
+  //Resultado de éxito al crear una reservación
   Widget stepConfirmed() {
     return SizedBox(
       width: double.infinity,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.check_circle, size: 48, color: Colors.green[600]),
-          SizedBox(height: 20),
+          Icon(Icons.check_circle, size: 36, color: Colors.blue),
+          SizedBox(height: 15),
           Text('Reserva confirmada', style: TextStyle(fontSize: 28)),
+          SizedBox(height: 15),
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
@@ -475,6 +470,34 @@ class _ReservationScreenState extends State<ReservationScreen> {
             },
             child: Text('Ir a calendario'),
           )
+        ],
+      ),
+    );
+  }
+
+  //Resultado del intento de crear una reservación si hubo error.
+  Widget stepError() {
+    return Container(
+      padding: EdgeInsets.all(12),
+      width: double.infinity,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.info_outline_rounded, size: 36, color: Colors.yellow[800]),
+          SizedBox(height: 15),
+          Text('La reserva no se guardó', style: TextStyle(fontSize: 15)),
+          SizedBox(height: 15),
+          Text(saveReservationError, style: TextStyle(fontSize: 18)),
+          SizedBox(height: 15),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                '/calendar_screen',
+                (route) => false,
+              );
+            },
+            child: Text('Ir a calendario'),
+          ),
         ],
       ),
     );

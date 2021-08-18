@@ -57,7 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       loading = false;
       Map mapUser = mapResponse['user'];
       userInfo['expirationAt'] = mapUser['expiration_at'];
-      if (userInfo['expirationAt'] != '') {
+      if (userInfo['expirationAt'] != null) {
         print(userInfo['expirtationAt']);
         expirationAt = DateTime.parse(mapUser['expiration_at']);
       }
@@ -180,9 +180,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           SizedBox(height: 6),
           Text('Tu suscripción está vencida'),
           SizedBox(height: 6),
-          Text(expirationAgo),
+          Text(
+            expirationAgo,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: kBgColors['appSecondary'],
+            ),
+          ),
           SizedBox(height: 6),
           Text(DateFormat.yMMMMEEEEd('es_ES').format(expirationAt)),
+          SizedBox(height: 6),
+          Text('Contacta a tu asesor comercial para renovarla'),
         ],
       );
     }

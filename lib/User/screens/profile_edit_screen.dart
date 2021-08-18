@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:brave_app/Config/constants.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
@@ -29,7 +29,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
 // Obtener datos de usuario por SharedPreferences
 //--------------------------------------------------------------------------
-  Map<String, String> _userInfo = {
+  Map<String, String> userInfo = {
     'userId': '',
     'displayName': '',
     'username': '',
@@ -45,20 +45,18 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
   /* Cargar datos de usuario de SharedPreferences */
   void _loadProfileData() async {
-    final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _userInfo['userId'] = (prefs.getString('userId') ?? '0');
-      _userInfo['displayName'] = (prefs.getString('userDisplayName') ?? '');
-      _userInfo['username'] = (prefs.getString('username') ?? '');
-      _userInfo['email'] = (prefs.getString('userEmail') ?? '');
-      _userInfo['picture'] =
-          (prefs.getString('userPicture') ?? kDefaultUserPicture);
+      userInfo['userId'] = UserSimplePreferences.getUserId();
+      userInfo['username'] = UserSimplePreferences.getUsername();
+      userInfo['email'] = UserSimplePreferences.getUserEmail();
+      userInfo['displayName'] = UserSimplePreferences.getUserDisplayName();
+      userInfo['picture'] = UserSimplePreferences.getUserPicture();
 
       //Establecer valores en controladores
       _displayNameController =
-          TextEditingController(text: _userInfo['displayName']);
-      _usernameController = TextEditingController(text: _userInfo['username']);
-      _emailController = TextEditingController(text: _userInfo['email']);
+          TextEditingController(text: userInfo['displayName']);
+      _usernameController = TextEditingController(text: userInfo['username']);
+      _emailController = TextEditingController(text: userInfo['email']);
     });
   }
 
@@ -80,14 +78,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 SizedBox(height: 24),
                 _buttonsTop(context),
                 CircleAvatar(
-                  backgroundImage: AssetImage('assets/img/lina.jpg'),
+                  backgroundImage: NetworkImage(userInfo['picture']),
                   radius: 50,
                 ),
                 SizedBox(height: 6),
-                Text(
-                  'Cambiar foto de perfil',
-                  style: TextStyle(fontSize: 18, color: Colors.blue[400]),
-                ),
                 Form(
                   key: _updateProfileFormKey,
                   child: Column(
@@ -116,14 +110,14 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         IconButton(
-          icon: Icon(Icons.close),
+          icon: Icon(Icons.close, color: Colors.black54),
           onPressed: () => {Navigator.pop(context)},
           iconSize: 42,
         ),
         IconButton(
           icon: Icon(
             Icons.check,
-            color: Colors.lightBlue,
+            color: kBgColors['appDark'],
           ),
           onPressed: () {
             _validateFormSend(context);
@@ -193,7 +187,6 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           print(updateData['validation_data']);
 
           if (updateData['status'] == 1) {
-            print('CAMBIOS GUARDADOS a ' + updateData['status'].toString());
             _updateSharedPreferences();
             _showSuccessSnackBar(context);
             Navigator.of(context).pop();
@@ -208,7 +201,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
   //Enviar datos de formulario y recibir datos de validación
   Future<Map> _sendForm() async {
-    var url = Uri.parse(kUrlApi + 'accounts/update/' + _userInfo['userId']);
+    var url = Uri.parse(kUrlApi + 'accounts/update/' + userInfo['userId']);
     var response = await http.post(
       url,
       body: {
@@ -227,18 +220,14 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
   //Actualizar datos de cuenta de usuario en SharedPreferences
   void _updateSharedPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    prefs.setString('userDisplayName', _displayNameController.text);
-    prefs.setString('userEmail', _emailController.text);
-    prefs.setString('username', _usernameController.text);
+    UserSimplePreferences.setUserDisplayName(_displayNameController.text);
+    UserSimplePreferences.setUserEmail(_emailController.text);
+    UserSimplePreferences.setUsername(_usernameController.text);
   }
 
   //Mostrar diálogo con error de validación
   void _showValidationErrorDialog(validationData) {
-    setState(() {
-      //_loading = false;
-    });
+    setState(() {});
 
     showDialog(
       context: context,

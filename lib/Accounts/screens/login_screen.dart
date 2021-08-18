@@ -171,8 +171,8 @@ class _LoginScreenState extends State<LoginScreen> {
               validationData['status'].toString());*/
           if (validationData['status'] == 1) {
             _loadSharedPreferences(validationData['user_info']);
-            Navigator.of(context)
-                .pushNamedAndRemoveUntil('/profile', (route) => false);
+            Navigator.of(context).pushNamedAndRemoveUntil(
+                '/admin_info_posts_screen', (route) => false);
           } else {
             _showInvalidLoginDialog(validationData);
           }

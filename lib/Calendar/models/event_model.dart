@@ -69,6 +69,7 @@ class EventModel {
   //Map información de un evento
   Future<Map> getReservatonInfo(eventId, userId) async {
     var url = Uri.parse(kUrlApi + 'reservations/get_info/$eventId/$userId');
+    print(url);
     var response = await http.get(url);
 
     if (response.statusCode == 200) {

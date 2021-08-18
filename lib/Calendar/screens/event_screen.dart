@@ -1,3 +1,4 @@
+import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
 import 'package:brave_app/Config/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:brave_app/Calendar/models/event_model.dart';
@@ -12,6 +13,8 @@ class EventScreen extends StatefulWidget {
 }
 
 class _EventScreenState extends State<EventScreen> {
+  String userId = UserSimplePreferences.getUserId() ?? '0';
+  String section = 'info';
   EventModel eventModel = EventModel();
   Future<Map> futureEventInfo;
   Map eventInfo = {'title': '', 'start': '', 'room_id': '10'};
@@ -21,12 +24,12 @@ class _EventScreenState extends State<EventScreen> {
   final DateFormat formatterHour = DateFormat('h:mm a');
 
   Future<Map> futureCancel;
-  Map mapCancel = {'qty_deleted': -1, 'error': ''};
+  Map resultCancel = {'qty_deleted': -1, 'error': ''};
 
   @override
   void initState() {
     super.initState();
-    futureEventInfo = eventModel.getReservatonInfo(widget.eventId, '202019');
+    futureEventInfo = eventModel.getReservatonInfo(widget.eventId, userId);
     futureEventInfo.then((value) {
       eventInfo = value;
       eventStart = DateTime.parse(eventInfo['start']);
@@ -40,31 +43,48 @@ class _EventScreenState extends State<EventScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(title: Text('Reserva entrenamiento')),
-        body: setBody(),
+        body: setBody(section),
       ),
     );
   }
 
   //Verifica si hay datos del evento, si no muestra indicador de cargue
-  Widget setBody() {
+  Widget setBody(String section) {
     if (eventInfo['title'] == '') {
       return Center(child: CircularProgressIndicator());
+    } else {
+      if (section == 'cancelResult') {
+        return cancelResult();
+      }
+      return eventContent();
     }
-    return eventContent();
   }
 
-  //Bodoy con información sobre la reservación
+  //Body con información sobre la reservación
   Widget eventContent() {
     return Container(
       padding: EdgeInsets.all(18),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(eventInfo['title'], style: TextStyle(fontSize: 24)),
+          Row(
+            children: [
+              Container(
+                margin: EdgeInsets.only(right: 12),
+                width: 6,
+                height: 24,
+                color: kBgColors['room_' + eventInfo['room_id']],
+              ),
+              Text(
+                eventInfo['title'],
+                style: TextStyle(fontSize: 18),
+              ),
+            ],
+          ),
           Container(
             height: 1,
             margin: EdgeInsets.only(top: 6, bottom: 12),
-            decoration:
-                BoxDecoration(color: kBgColors['room_' + eventInfo['room_id']]),
+            decoration: BoxDecoration(color: Colors.black12),
           ),
           Text(
             formatterWeekDay.format(eventStart),
@@ -78,12 +98,8 @@ class _EventScreenState extends State<EventScreen> {
             style: TextStyle(fontSize: 28),
           ),
           SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () {
-              cancelReservation();
-            },
-            child: Text('Cancelar reserva'),
-          ),
+          //Si el evento es posterior a ahora, mostrar botón de cancelar
+          if (eventStart.isAfter(DateTime.now())) cancelReservationButton(),
         ],
       ),
     );
@@ -92,9 +108,82 @@ class _EventScreenState extends State<EventScreen> {
 // Cancelación de la reservación
 //------------------------------------------------------------------------------
 
+  Widget cancelReservationButton() {
+    return ElevatedButton(
+      onPressed: () {
+        showCancelConfirmDialog(context);
+      },
+      child: Text('Cancelar reserva'),
+    );
+  }
+
+  showCancelConfirmDialog(BuildContext context) {
+    // set up the buttons
+    Widget noButton = TextButton(
+      child: Text('No'),
+      onPressed: () => Navigator.pop(context, 'Cancel'),
+    );
+    Widget yesButton = TextButton(
+      child: Text('Sí'),
+      onPressed: () {
+        Navigator.pop(context, 'Cancel');
+        cancelReservation();
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Cancelar reservación"),
+      content: Text("¿Confirma que desea cancelar esta reservación?"),
+      actions: [
+        noButton,
+        yesButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  //Contenido para el body, resultado de la cancelación
   Widget cancelResult() {
+    //Valores por defecto, éxito
+    String _messageResult = 'La reservación fue cancelada';
+    Icon _iconResult = Icon(Icons.check_circle, size: 36, color: Colors.blue);
+
+    //Si ocurrió un error
+    if (resultCancel['error'] != '') {
+      _messageResult = resultCancel['error'];
+      _iconResult = Icon(
+        Icons.info_outline_rounded,
+        color: Colors.yellow[700],
+        size: 36,
+      );
+    }
+
     return Center(
-      child: Text('La reservación fue cancelada'),
+      child: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _iconResult,
+            SizedBox(height: 24),
+            Text(_messageResult),
+            SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/calendar_screen', (route) => false);
+              },
+              child: Text('Calendario'),
+            )
+          ],
+        ),
+      ),
     );
   }
 
@@ -104,9 +193,10 @@ class _EventScreenState extends State<EventScreen> {
       eventInfo['training_id'],
     );
 
-    futureCancel.then((value) {
-      print(value);
-      mapCancel = value;
+    futureCancel.then((response) {
+      resultCancel = response;
+      section = 'cancelResult';
+      setState(() {});
     });
   }
 }

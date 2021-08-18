@@ -14,7 +14,7 @@ class _BottomBarComponentState extends State<BottomBarComponent> {
   int indexTap = 0;
 
   final List<String> routes = [
-    '/posts_feed_screen',
+    '/admin_info_posts_screen',
     '/calendar_screen',
     '/profile',
   ];

@@ -1,4 +1,5 @@
 import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
+import 'package:brave_app/Config/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_clean_calendar/flutter_clean_calendar.dart';
 import 'package:flutter_clean_calendar/clean_calendar_event.dart';
@@ -40,12 +41,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Agenda'),
-      ),
-      body: SafeArea(
-        child: setContent(),
-      ),
+      appBar: AppBar(title: Text('Calendario')),
+      body: SafeArea(child: setContent()),
       drawer: DrawerComponent(),
       bottomNavigationBar: BottomBarComponent(),
       floatingActionButton: FloatingActionButton.extended(
@@ -54,7 +51,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         onPressed: () {
           Navigator.of(context).pushNamed('/reservation_screen');
         },
-        backgroundColor: Colors.purple,
+        backgroundColor: kBgColors['appSecondary'],
       ),
     );
   }
@@ -74,17 +71,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
       events: mapEvents,
       isExpandable: true,
       eventDoneColor: Colors.green,
-      selectedColor: Colors.purple[600],
-      todayColor: Colors.green[800],
-      eventColor: Colors.green,
+      selectedColor: kBgColors['appSecondary'],
+      todayColor: kBgColors['appSecondary'],
+      eventColor: Colors.white,
       locale: 'es_ES',
       todayButtonText: 'Hoy',
       isExpanded: true,
       expandableDateFormat: 'EEEE, dd. MMMM yyyy',
       dayOfWeekStyle: TextStyle(
-        color: Colors.black,
+        color: Colors.black87,
         fontWeight: FontWeight.w800,
-        fontSize: 11,
+        fontSize: 15,
       ),
       onEventSelected: _displayEvent,
     );

@@ -194,8 +194,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           print(registerData);
           if (registerData['status'] == 1) {
             _loadSharedPreferences(registerData['user_info']);
-            Navigator.of(context)
-                .pushNamedAndRemoveUntil('/profile', (route) => false);
+            Navigator.of(context).pushNamedAndRemoveUntil(
+                '/admin_info_posts_screen', (route) => false);
             print('PUSHING PROFILE');
           } else {
             _showInvalidLoginDialog(registerData['validation_data']);
