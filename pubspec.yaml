@@ -29,6 +29,8 @@ dependencies:
   shared_preferences: ^2.0.6  # Para gestión de datos de sesión de usuario
   form_field_validator: ^1.1.0  #Validación de formularios
   timeago: ^3.1.0 # Generar strings tiempos hace o dentro de
+  simple_html_css: ^3.0.1 # convierte html a RichText
+
 
 
   # The following adds the Cupertino Icons font to your application.

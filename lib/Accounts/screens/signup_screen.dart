@@ -4,6 +4,7 @@ import 'package:brave_app/Config/constants.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
+import 'package:brave_app/Accounts/screens/user_data_terms_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key key}) : super(key: key);
@@ -21,6 +22,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String _emailValue;
   String _displayNameValue;
   String _passwordValue;
+  bool _acceptedTerms = false;
+  bool _acceptedTermsValidator = true;
 
   final _registerFormKey = GlobalKey<FormState>();
 
@@ -32,8 +35,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
       body: Stack(
         children: [
           Container(
-            child: Image.asset('assets/img/logo-400.png'),
-            padding: const EdgeInsets.all(72.0),
+            margin: EdgeInsets.only(top: 50),
+            height: 140,
+            child: Center(
+              child: Image.asset('assets/img/logo-400.png'),
+            ),
           ),
           Center(
             child: SingleChildScrollView(
@@ -47,7 +53,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   margin: const EdgeInsets.only(
                     left: 20,
                     right: 20,
-                    top: 180,
+                    top: 120,
                     bottom: 20,
                   ),
                   child: Padding(
@@ -58,9 +64,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         _displayNameField(),
                         _emailField(),
                         _passwordField(),
-                        SizedBox(height: 20),
+                        SizedBox(height: 12),
+                        _checkboxTermsTile(),
+                        _linkTermsScreen(),
+                        SizedBox(height: 12),
                         _submitButton(),
-                        SizedBox(height: 20),
+                        SizedBox(height: 15),
                         _bottomInfo(),
                       ],
                     ),
@@ -133,10 +142,53 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
+  //Casilla de verificación, aceptación de términos y condiciones
+  Widget _checkboxTermsTile() {
+    return CheckboxListTile(
+      title: const Text(
+        'Conozco y acepto la política de tratamiento de datos personales de Brave',
+        style: TextStyle(fontSize: 12),
+      ),
+      subtitle: _checkboxTermsTileSubtitle(),
+      value: _acceptedTerms,
+      onChanged: (bool value) {
+        setState(() => _acceptedTerms = value);
+      },
+    );
+  }
+
+  //Subtitulo de casilla de aceptación de términos
+  Widget _checkboxTermsTileSubtitle() {
+    if (_acceptedTermsValidator == false) {
+      return Text(
+        'Para continuar debes activar esta casilla',
+        style: TextStyle(
+          color: Colors.red,
+          fontSize: 12,
+        ),
+      );
+    }
+    return SizedBox();
+  }
+
+  Widget _linkTermsScreen() {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => UserDataTerms(),
+          ),
+        );
+      },
+      child: Text('Ver política', style: TextStyle(color: Colors.blue)),
+    );
+  }
+
   //Botón envío formulario
   Widget _submitButton() {
     return ElevatedButton(
-      onPressed: () => {_register(context)},
+      onPressed: () => _register(context),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -176,13 +228,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   //Realizar la validación de register de usuario
   void _register(BuildContext context) {
+    //Validar casillas del formulario
     setState(() {
-      _loading = true;
+      _acceptedTermsValidator = _acceptedTerms;
+      _checkboxTermsTileSubtitle();
     });
 
-    //Validar casillas del formulario
-    if (_registerFormKey.currentState.validate()) {
+    if (_registerFormKey.currentState.validate() && _acceptedTerms) {
       _registerFormKey.currentState.save();
+
+      setState(() {
+        _loading = true;
+      });
 
       //Validar register
       _registerResponse = _sendRegister();
@@ -198,7 +255,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 '/admin_info_posts_screen', (route) => false);
             print('PUSHING PROFILE');
           } else {
-            _showInvalidLoginDialog(registerData['validation_data']);
+            _showInvalidSignUpDialog(registerData['validation_data']);
           }
         },
       );
@@ -239,16 +296,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   //Mostrar diálogo con error de validación
-  void _showInvalidLoginDialog(validationData) {
-    setState(() {
-      _loading = false;
-    });
+  void _showInvalidSignUpDialog(validationData) {
+    setState(() => _loading = false);
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          'Inicio de sesión',
+          'Creación de cuenta',
           style: TextStyle(color: Colors.lightBlue),
         ),
         content: Text(_errorText(validationData['validation'])),
@@ -258,9 +313,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   //Texto para mostrar en el Dialog según el error
   String _errorText(validation) {
-    print(validation);
+    //print(validation);
     if (validation['email_unique'] == 0) {
-      return 'Ya existe una cuenta con este correo electrónico';
+      return 'Ya existe una cuenta con este correo electrónico.';
     }
     return 'Ocurrió un error al crear la cuenta';
   }

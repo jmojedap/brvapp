@@ -49,7 +49,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         icon: Icon(Icons.add, color: Colors.white),
         label: Text('Reserva', style: TextStyle(color: Colors.white)),
         onPressed: () {
-          Navigator.of(context).pushNamed('/reservation_screen');
+          Navigator.of(context).pushNamed('/health_survey_screen');
         },
         backgroundColor: kBgColors['appSecondary'],
       ),
