@@ -23,7 +23,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.13.3
+  http: ^0.13.3 #Peticiones http a API
   flutter_clean_calendar: ^1.1.0
   intl: ^0.17.0
   shared_preferences: ^2.0.6  # Para gestión de datos de sesión de usuario
@@ -40,6 +40,12 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: "^0.9.1"
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/launcher_icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -56,9 +62,7 @@ flutter:
   assets:
     - assets/img/logo-400.png
     - assets/img/logo-square-144.png
-    - assets/img/lina.jpg
     - assets/img/loading.gif
-    - assets/examples/
 
   fonts:
     - family: Rubik
