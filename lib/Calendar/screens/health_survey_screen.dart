@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:brave_app/Config/constants.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HealthSurveyScreen extends StatefulWidget {
   //HealthSurveyScreen({Key? key}) : super(key: key);
@@ -26,13 +27,14 @@ class _HealthSurveyScreenState extends State<HealthSurveyScreen> {
   };
   bool fluLastDays = false;
   bool inContact = false;
+  String _urlMinSalud = 'https://www.minsalud.gov.co/';
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Estado de salud'),
+          title: Text('Cuido a los demás'),
         ),
         body: bodyContent(step),
       ),
@@ -47,83 +49,88 @@ class _HealthSurveyScreenState extends State<HealthSurveyScreen> {
   }
 
   Widget surveyContent() {
-    return Container(
-      padding: EdgeInsets.all(24),
-      child: Column(
-        children: [
-          Text(
-              'Selecciona si has experimentado uno o más de estos síntomas recientemente'),
-          SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              symptomButton('Tos', 'tos'),
-              symptomButton('Escalofríos', 'escalofrios'),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              symptomButton('Diarrea', 'diarrea'),
-              symptomButton('Dolor de garganta', 'dolor_garganta'),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              symptomButton('Fiebre mayor a 37.5', 'fiebre'),
-              symptomButton('Fatiga', 'fatiga'),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              symptomButton('Dificultad para respirar', 'dificultad_respirar'),
-              symptomButton('Dolor corporal', 'dolor_corporal'),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              symptomButton('Dolor de cabeza', 'dolor_cabeza'),
-              symptomButton('Falta de olfato', 'falta_olfato'),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              symptomButton('Falta de gusto', 'falta_gusto'),
-              noneSymptomButton(),
-            ],
-          ),
-          SizedBox(height: 12),
-          SwitchListTile(
-            title:
-                Text('He presentado un cuadro gripal en los últimos 14 días'),
-            value: fluLastDays,
-            onChanged: (value) {
-              setState(() {
-                fluLastDays = value;
-              });
-            },
-          ),
-          SwitchListTile(
-            title: Text('He estado en contacto con personas infectadas'),
-            value: inContact,
-            onChanged: (value) {
-              setState(() {
-                inContact = value;
-              });
-            },
-          ),
-          SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () {
-              checkAnswer();
-            },
-            child: Text('Continuar'),
-          ),
-        ],
+    return SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.all(24),
+        child: Column(
+          children: [
+            Text(
+                'Selecciona si has experimentado uno o más de estos síntomas recientemente'),
+            SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                symptomButton('Tos', 'tos'),
+                symptomButton('Escalofríos', 'escalofrios'),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                symptomButton('Diarrea', 'diarrea'),
+                symptomButton('Dolor de garganta', 'dolor_garganta'),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                symptomButton('Fiebre mayor a 37.5', 'fiebre'),
+                symptomButton('Fatiga', 'fatiga'),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                symptomButton(
+                    'Dificultad para respirar', 'dificultad_respirar'),
+                symptomButton('Dolor corporal', 'dolor_corporal'),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                symptomButton('Dolor de cabeza', 'dolor_cabeza'),
+                symptomButton('Falta de olfato', 'falta_olfato'),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                symptomButton('Falta de gusto', 'falta_gusto'),
+                noneSymptomButton(),
+              ],
+            ),
+            SizedBox(height: 12),
+            SwitchListTile(
+              title:
+                  Text('He presentado un cuadro gripal en los últimos 14 días'),
+              value: fluLastDays,
+              onChanged: (value) {
+                setState(() {
+                  fluLastDays = value;
+                });
+              },
+            ),
+            SwitchListTile(
+              title: Text('He estado en contacto con personas infectadas'),
+              value: inContact,
+              onChanged: (value) {
+                setState(() {
+                  inContact = value;
+                });
+              },
+            ),
+            SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () {
+                checkAnswer();
+              },
+              child: Text('Continuar'),
+            ),
+            SizedBox(height: 12),
+            infoAlert(),
+          ],
+        ),
       ),
     );
   }
@@ -183,6 +190,56 @@ class _HealthSurveyScreenState extends State<HealthSurveyScreen> {
     );
   }
 
+  Widget infoAlert() {
+    return Container(
+      decoration: BoxDecoration(),
+      child: Column(
+        children: [
+          Text(
+            'Importante',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: kBgColors['appSecondary']),
+          ),
+          SizedBox(height: 6),
+          Text(
+            'Este cuestionario tiene como propósito garantizar la seguridad de quienes comparten las zonas de entrenamiento. Ningún dato será procesado o almacenado',
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 6),
+          Text(
+            'Para conocer información oficial de las autoridades colombianas, consulta el portal web del Ministerio de Salud y Protección Social aquí:',
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 12),
+          InkWell(
+            onTap: () {
+              _launchURL(_urlMinSalud);
+            },
+            child: Text(
+              'Abrir',
+              style: TextStyle(
+                color: Colors.blue,
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  /*void _launchURL() async => await canLaunch(_urlMinSalud)
+      ? await launch(_urlMinSalud)
+      : throw 'Could not launch $_urlMinSalud';*/
+
 // Resultado de encuestas
 //------------------------------------------------------------------------------
 
@@ -226,7 +283,7 @@ class _HealthSurveyScreenState extends State<HealthSurveyScreen> {
             onPressed: () {
               Navigator.pop(context);
             },
-            child: Text('Continuar'),
+            child: Text('Aceptar'),
           ),
         ],
       ),
