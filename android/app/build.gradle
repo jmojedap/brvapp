@@ -41,7 +41,7 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.pacarina.braveGym"
-        minSdkVersion 16
+        minSdkVersion 20    //2021-09-19, Anterior 16, actualizado a 20 para que funcione webview_flutter package
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

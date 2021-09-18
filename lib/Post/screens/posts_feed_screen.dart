@@ -49,7 +49,7 @@ class _PostsFeedScreenState extends State<PostsFeedScreen> {
         ),
       ),
       drawer: DrawerComponent(),
-      bottomNavigationBar: BottomBarComponent(),
+      bottomNavigationBar: BottomBarComponent(0),
     );
   }
 

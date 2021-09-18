@@ -108,7 +108,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ),
       ),
       drawer: DrawerComponent(),
-      bottomNavigationBar: BottomBarComponent(),
+      bottomNavigationBar: BottomBarComponent(1),
       floatingActionButton: FloatingActionButton.extended(
         icon: Icon(Icons.add, color: Colors.white),
         label: Text('Reserva', style: TextStyle(color: Colors.white)),

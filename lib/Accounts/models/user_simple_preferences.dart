@@ -7,6 +7,7 @@ class UserSimplePreferences {
 // Keys de valores
 //------------------------------------------------------------------------------
   static const _keyUserId = 'userId';
+  static const _keyUserKey = 'userkey';
   static const _keyUserDisplayName = 'userDisplayName';
   static const _keyUsername = 'username';
   static const _keyUserEmail = 'userEmail';
@@ -20,6 +21,9 @@ class UserSimplePreferences {
 //------------------------------------------------------------------------------
   static Future setUserId(String userId) async =>
       await _preferences.setString(_keyUserId, userId);
+
+  static Future setUserKey(String userKey) async =>
+      await _preferences.setString(_keyUserKey, userKey);
 
   static Future setUserDisplayName(String userDisplayName) async =>
       await _preferences.setString(_keyUserDisplayName, userDisplayName);
@@ -42,6 +46,7 @@ class UserSimplePreferences {
 //------------------------------------------------------------------------------
 
   static String getUserId() => _preferences.getString(_keyUserId) ?? '0';
+  static String getUserKey() => _preferences.getString(_keyUserKey) ?? '0';
   static String getUserDisplayName() =>
       _preferences.getString(_keyUserDisplayName) ?? 'ND';
   static String getUsername() =>

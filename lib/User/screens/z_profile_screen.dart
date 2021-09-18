@@ -95,7 +95,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
       drawer: DrawerComponent(),
-      bottomNavigationBar: BottomBarComponent(),
+      bottomNavigationBar: BottomBarComponent(2),
     );
   }
 

@@ -38,10 +38,10 @@ class _AdminInfoPostsScreenState extends State<AdminInfoPostsScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(title: Text('Brave App')),
+        appBar: AppBar(title: Text('Brave')),
         body: setBodyContent(currentSection),
         drawer: DrawerComponent(),
-        bottomNavigationBar: BottomBarComponent(),
+        bottomNavigationBar: BottomBarComponent(0),
       ),
     );
   }

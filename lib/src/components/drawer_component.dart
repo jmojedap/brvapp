@@ -47,19 +47,21 @@ class _DrawerComponentState extends State<DrawerComponent> {
               backgroundColor: Colors.white,
             ),
           ),
-          /*ListTile(
-            title: Text('Inicio'),
-            leading: Icon(Icons.home),
-            onTap: () => _showHome(context),
-          ),
           ListTile(
-            title: Text('Mi suscripción'),
-            leading: Icon(Icons.payment),
+            title: Text('Contraseña'),
+            leading: Icon(Icons.vpn_key),
             onTap: () => {
-              Navigator.of(context).pushNamed('/subscription_status'),
+              Navigator.of(context).pushNamed('/password'),
             },
           ),
           ListTile(
+            title: Text('Desempeño'),
+            leading: Icon(Icons.vpn_key),
+            onTap: () => {
+              Navigator.of(context).pushNamed('/performance'),
+            },
+          ),
+          /*ListTile(
             title: Text('Calendario'),
             leading: Icon(Icons.calendar_today),
             onTap: () => {
@@ -76,10 +78,10 @@ class _DrawerComponentState extends State<DrawerComponent> {
     );
   }
 
-  void _showHome(BuildContext context) {
+  /*void _showHome(BuildContext context) {
     print('Probando impresión de textos');
     Navigator.pop(context);
-  }
+  }*/
 
   /*
   Limpiar datos de usuario de SharedPreferences e ir a inicio
@@ -89,6 +91,6 @@ class _DrawerComponentState extends State<DrawerComponent> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     await preferences.clear();
 
-    Navigator.of(context).pushNamed('/start');
+    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
   }
 }

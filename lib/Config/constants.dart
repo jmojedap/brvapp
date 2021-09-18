@@ -9,6 +9,12 @@ const String kDefaultUserPicture =
 const String kDefaultPostPicture =
     'https://www.bravebackend.com/resources/static/images/app/logo-400.png';
 
+/*const String kUrlApi = 'https://www.pacarina.net/projects/bravebackend/api/';
+const String kDefaultUserPicture =
+    'https://www.pacarina.net/projects/bravebackend/resources/static/images/users/user.png';
+const String kDefaultPostPicture =
+    'https://www.pacarina.net/projects/bravebackend/resources/static/images/app/logo-400.png';*/
+
 // Colores
 //------------------------------------------------------------------------------
 const Map kBgColors = {

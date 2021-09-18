@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
+import 'package:brave_app/User/models/user_tools.dart';
 
 class StartScreen extends StatefulWidget {
   //const StartScreen({Key? key}) : super(key: key);
@@ -9,24 +10,32 @@ class StartScreen extends StatefulWidget {
 }
 
 class _StartScreenState extends State<StartScreen> {
-  String _userId = '';
-  //String _routeDestination = '/login';
+  String _userId = UserSimplePreferences.getUserId();
+  //String _userKey = UserSimplePreferences.getUserKey();
+  Future _futureUserKey;
+
+// Herramientas
+//--------------------------------------------------------------------------
+  UserTools userTools = UserTools();
 
   @override
   void initState() {
     super.initState();
-    _checkSession();
+    //_checkSession();
   }
 
   /* Cargar datos de usuario de SharedPreferences */
   void _checkSession() async {
-    print('Check Session');
-    final prefs = await SharedPreferences.getInstance();
-    _userId = (prefs.getString('userDisplayName') ?? '');
-    if (_userId == '') {
+    print('Checking session');
+
+    print(_userId);
+    if (_userId == '0') {
       _goToNextScreen('/login');
     } else {
-      _goToNextScreen('/calendar_screen');
+      /*if (_userKey == '0') {
+        getUserKey();
+      }*/
+      _goToNextScreen('/admin_info_posts_screen');
     }
   }
 
@@ -37,11 +46,15 @@ class _StartScreenState extends State<StartScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
-            padding: const EdgeInsets.all(56.0),
+            padding: const EdgeInsets.all(66.0),
             child: Image.asset('assets/img/logo-400.png'),
           ),
-          SizedBox(
-            height: 20,
+          ElevatedButton(
+            onPressed: () {
+              //_goToNextScreen('/login');
+              _checkSession();
+            },
+            child: Text('Continuar'),
           ),
         ],
       ),
@@ -53,5 +66,15 @@ class _StartScreenState extends State<StartScreen> {
       destinationRoute,
       (route) => false,
     );
+  }
+
+  /* Cargar datos de usuario de SharedPreferences */
+  void getUserKey() async {
+    _futureUserKey = userTools.getUserKey(_userId);
+
+    _futureUserKey.then((mapResponse) {
+      print(mapResponse);
+      setState(() {});
+    });
   }
 }

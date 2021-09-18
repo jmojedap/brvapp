@@ -5,13 +5,15 @@ class BottomBarComponent extends StatefulWidget {
   /*int indexTap;
 
   BottomBarComponent(this.indexTap);*/
+  final int indexTap;
+  BottomBarComponent(this.indexTap);
 
   @override
   _BottomBarComponentState createState() => _BottomBarComponentState();
 }
 
 class _BottomBarComponentState extends State<BottomBarComponent> {
-  int indexTap = 0;
+  //int indexTap = 1;
 
   final List<String> routes = [
     '/admin_info_posts_screen',
@@ -21,12 +23,12 @@ class _BottomBarComponentState extends State<BottomBarComponent> {
 
   void onTapTapped(int index) {
     setState(() {
-      indexTap = index;
+      //indexTap = index;
       //String newScreen = routes
-      print('Index: $index');
-      print('Index:' + routes[indexTap]);
+      //print('Index: $index');
+      print('Index:' + routes[index]);
       Navigator.of(context)
-          .pushNamedAndRemoveUntil(routes[indexTap], (route) => false);
+          .pushNamedAndRemoveUntil(routes[index], (route) => false);
       //Navigator.of(context).restorablePushNamed(routes[indexTap]);
     });
   }
@@ -36,7 +38,7 @@ class _BottomBarComponentState extends State<BottomBarComponent> {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       onTap: onTapTapped,
-      currentIndex: indexTap,
+      currentIndex: widget.indexTap,
       items: [
         BottomNavigationBarItem(
           icon: Icon(Icons.home),

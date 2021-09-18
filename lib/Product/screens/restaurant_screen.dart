@@ -33,7 +33,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
       body: _productsListView(),
       /*body: Text(
           'Hola a todos este es un texto largo para verificar si se pueden generar varios saltos de línea fuera de row o column'),*/
-      bottomNavigationBar: BottomBarComponent(),
+      bottomNavigationBar: BottomBarComponent(0),
     );
   }
 

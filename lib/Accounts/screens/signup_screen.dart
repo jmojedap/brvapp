@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
 import 'package:brave_app/Config/constants.dart';
+import 'package:brave_app/Config/validation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
@@ -131,12 +132,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       onSaved: (value) {
         _passwordValue = value;
       },
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Por favor complete esta casilla';
-        }
-        return null;
-      },
+      validator: kPasswordValidator,
       decoration: InputDecoration(labelText: 'Contraseña'),
       obscureText: true,
     );
@@ -192,16 +188,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (_loading)
-            Container(
-              height: 20,
-              width: 20,
-              margin: const EdgeInsets.only(right: 20),
-              child: Theme(
-                data: Theme.of(context).copyWith(accentColor: Colors.green[50]),
-                child: new CircularProgressIndicator(),
-              ),
-            ),
+          if (_loading) CircularProgressIndicator(color: Colors.green[50]),
           Text('Crear cuenta'),
         ],
       ),

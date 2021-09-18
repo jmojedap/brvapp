@@ -39,7 +39,7 @@ class _GeneralSearchScreenState extends State<GeneralSearchScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomBarComponent(),
+      bottomNavigationBar: BottomBarComponent(0),
     );
   }
 }

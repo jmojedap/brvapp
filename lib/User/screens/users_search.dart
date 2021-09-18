@@ -48,7 +48,7 @@ class _UsersSearchState extends State<UsersSearch> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomBarComponent(),
+      bottomNavigationBar: BottomBarComponent(2),
     );
   }
 

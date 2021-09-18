@@ -101,7 +101,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomBarComponent(),
+      bottomNavigationBar: BottomBarComponent(0),
     );
   }
 

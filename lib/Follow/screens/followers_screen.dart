@@ -53,7 +53,7 @@ class _FollowersScreenState extends State<FollowersScreen> {
             _followingListView(),
           ],
         ),
-        bottomNavigationBar: BottomBarComponent(),
+        bottomNavigationBar: BottomBarComponent(0),
       ),
     );
   }
