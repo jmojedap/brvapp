@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
-import 'package:brave_app/Config/constants.dart';
 import 'package:brave_app/Config/validation.dart';
-import 'package:http/http.dart' as http;
 import 'dart:async';
-import 'dart:convert';
 import 'package:brave_app/Accounts/screens/user_data_terms_screen.dart';
+import 'package:brave_app/Accounts/models/account_model.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key key}) : super(key: key);
@@ -17,7 +15,7 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
 // Variables
 //--------------------------------------------------------------------------
-  Future<Map> _registerResponse;
+  Future<Map> _futureSignUp;
   bool _loading = false;
 
   String _emailValue;
@@ -224,47 +222,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (_registerFormKey.currentState.validate() && _acceptedTerms) {
       _registerFormKey.currentState.save();
 
-      setState(() {
-        _loading = true;
-      });
+      setState(() => _loading = true);
 
-      //Validar register
-      _registerResponse = _sendRegister();
+      var formData = {
+        'display_name': _displayNameValue,
+        'email': _emailValue,
+        'new_password': _passwordValue,
+      };
+
+      //Enviar SignUp
+      _futureSignUp = AccountModel().signUp(formData);
 
       //Al recibir respuesta de validación
-      _registerResponse.then(
-        (registerData) {
-          print('Register response');
-          print(registerData);
-          if (registerData['status'] == 1) {
-            _loadSharedPreferences(registerData['user_info']);
+      _futureSignUp.then(
+        (signUpResponse) {
+          print('Register signUpResponse');
+          print(signUpResponse);
+          if (signUpResponse['status'] == 1) {
+            _loadSharedPreferences(signUpResponse['user_info']);
             Navigator.of(context).pushNamedAndRemoveUntil(
-                '/admin_info_posts_screen', (route) => false);
-            print('PUSHING PROFILE');
+              '/admin_info_posts_screen',
+              (route) => false,
+            );
           } else {
-            _showInvalidSignUpDialog(registerData['validation_data']);
+            _showInvalidSignUpDialog(signUpResponse['validation_data']);
           }
         },
       );
-    }
-  }
-
-  //Enviar datos de formulario y recibir datos de validación
-  Future<Map> _sendRegister() async {
-    var urlUsers = Uri.parse(kUrlApi + 'accounts/register/');
-    var response = await http.post(
-      urlUsers,
-      body: {
-        'display_name': _displayNameValue,
-        'email': _emailValue,
-        'new_password': _passwordValue
-      },
-    );
-
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Error al registrar usuario');
     }
   }
 

@@ -1,7 +1,7 @@
 import 'package:brave_app/Config/constants.dart';
 import 'package:brave_app/Post/models/posts_tools.dart';
-import 'package:brave_app/src/components/bottom_bar_component.dart';
-import 'package:brave_app/src/components/drawer_component.dart';
+import 'package:brave_app/Common/screens/bottom_bar_component.dart';
+import 'package:brave_app/Common/screens/drawer_component.dart';
 import 'package:flutter/material.dart';
 
 class AdminInfoPostsScreen extends StatefulWidget {

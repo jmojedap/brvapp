@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:brave_app/src/components/bottom_bar_component.dart';
+import 'package:brave_app/Common/screens/bottom_bar_component.dart';
 
 class GeneralSearchScreen extends StatefulWidget {
   //GeneralSearchScreen({Key? key}) : super(key: key);

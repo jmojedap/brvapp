@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
 import 'package:brave_app/Config/constants.dart';
-import 'package:brave_app/src/components/bottom_bar_component.dart';
-import 'package:brave_app/src/components/drawer_component.dart';
+import 'package:brave_app/Common/screens/bottom_bar_component.dart';
+import 'package:brave_app/Common/screens/drawer_component.dart';
 import 'package:brave_app/User/models/user_tools.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';

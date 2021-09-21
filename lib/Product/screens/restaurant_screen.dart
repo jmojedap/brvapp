@@ -1,7 +1,7 @@
-import 'package:brave_app/Product/models/product_model.dart';
-import 'package:brave_app/src/components/drawer_component.dart';
 import 'package:flutter/material.dart';
-import 'package:brave_app/src/components/bottom_bar_component.dart';
+import 'package:brave_app/Product/models/product_model.dart';
+import 'package:brave_app/Common/screens/bottom_bar_component.dart';
+import 'package:brave_app/Common/screens/drawer_component.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';

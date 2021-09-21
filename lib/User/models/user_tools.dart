@@ -19,7 +19,7 @@ class UserTools {
     }
   }
 
-  //Map respuesta cancelación de una reservación
+  //Map con información de userKey de un ususuario
   Future<Map> getUserKey(userId) async {
     var url =
         Uri.parse(kUrlApi + 'accounts/get_userkey/0IEM5CCSJ97LWC7L/$userId/');

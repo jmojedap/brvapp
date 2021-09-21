@@ -1,4 +1,5 @@
 //import 'package:brave_app/src/screens/start_screen.dart';
+import 'package:brave_app/User/models/user_tools.dart';
 import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
 import 'package:brave_app/Accounts/screens/signup_screen.dart';
 import 'package:brave_app/Accounts/screens/login_screen.dart';
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    getUserKey();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Brave',
@@ -72,5 +74,16 @@ class MyApp extends StatelessWidget {
             RestaurantProductScreen(),
       },
     );
+  }
+
+  /* Cargar datos de usuario de SharedPreferences */
+  void getUserKey() async {
+    print('Cargando userkey:');
+    Future _futureUserKey = UserTools().getUserKey(_userId);
+
+    _futureUserKey.then((mapResponse) {
+      print(mapResponse['userkey']);
+      UserSimplePreferences.setUserKey(mapResponse['userkey']);
+    });
   }
 }

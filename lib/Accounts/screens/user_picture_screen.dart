@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:brave_app/Config/constants.dart';
+import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
+import 'package:brave_app/Accounts/models/account_model.dart';
 
 class UserPictureScreen extends StatefulWidget {
   //UserPictureScreen({Key? key}) : super(key: key);
@@ -14,6 +16,9 @@ class UserPictureScreen extends StatefulWidget {
 class _UserPictureScreenState extends State<UserPictureScreen> {
   File _imageFile;
   final picker = ImagePicker();
+  final _userId = UserSimplePreferences.getUserId();
+  final _userKey = UserSimplePreferences.getUserKey();
+  Future<Map> _futureUploadPicture;
 
   Future _pickImage(ImageSource source) async {
     XFile pickedImage = await picker.pickImage(source: source);
@@ -34,8 +39,11 @@ class _UserPictureScreenState extends State<UserPictureScreen> {
         ),
       );
 
+      _imageFile = cropped;
+      //_imageFile = pickedImage;
       setState(() {
-        _imageFile = cropped;
+        print('imagen cortada');
+        //_imageFile = cropped;
       });
     }
   }
@@ -50,14 +58,42 @@ class _UserPictureScreenState extends State<UserPictureScreen> {
 
   Widget bodyContent() {
     if (_imageFile != null) {
-      return Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(image: FileImage(_imageFile)),
-        ),
+      return Column(
+        children: [
+          Image.file(_imageFile),
+          SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              print('Enviando botón');
+              uploadPicture();
+            },
+            child: Text('Guardar'),
+          ),
+        ],
       );
     } else {
       return contentNoImage();
     }
+  }
+
+  Widget contentImage() {
+    return Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(image: FileImage(_imageFile)),
+          ),
+        ),
+        SizedBox(height: 24),
+        ElevatedButton(
+          onPressed: () {
+            print('Enviando botón');
+            uploadPicture();
+          },
+          child: Text('Guardar'),
+        ),
+      ],
+    );
   }
 
   Widget contentNoImage() {
@@ -65,12 +101,7 @@ class _UserPictureScreenState extends State<UserPictureScreen> {
       padding: EdgeInsets.all(12),
       child: Center(
         child: Column(children: [
-          Container(
-            width: 200,
-            height: 200,
-            color: Colors.black38,
-            margin: EdgeInsets.only(bottom: 12),
-          ),
+          Text(_userKey + '--' + _userId),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -92,5 +123,15 @@ class _UserPictureScreenState extends State<UserPictureScreen> {
         ]),
       ),
     );
+  }
+
+  void uploadPicture() {
+    _futureUploadPicture =
+        AccountModel().setPicture(_userId, _userKey, _imageFile.path);
+
+    _futureUploadPicture.then((stringResponse) {
+      print('desde Screen:');
+      print(stringResponse);
+    });
   }
 }
