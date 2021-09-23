@@ -41,7 +41,8 @@ class AccountModel {
     print(filepath);
     print(url);
     var formData = FormData.fromMap({
-      'file_field': await MultipartFile.fromFile(filepath, filename: 'file.jpg')
+      'file_field':
+          await MultipartFile.fromFile(filepath, filename: 'user_picture.jpg')
     });
     var response = await Dio().post(url, data: formData);
 

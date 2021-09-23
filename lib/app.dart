@@ -1,8 +1,8 @@
-//import 'package:brave_app/src/screens/start_screen.dart';
 import 'package:brave_app/User/models/user_tools.dart';
 import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
 import 'package:brave_app/Accounts/screens/signup_screen.dart';
 import 'package:brave_app/Accounts/screens/login_screen.dart';
+import 'package:brave_app/Accounts/screens/account_edit_menu.dart';
 import 'package:brave_app/Accounts/screens/password_screen.dart';
 import 'package:brave_app/Accounts/screens/user_picture_screen.dart';
 import 'package:brave_app/User/screens/profile_screen.dart';
@@ -24,8 +24,8 @@ import 'package:flutter/material.dart';
 class MyApp extends StatelessWidget {
   final String _userId = UserSimplePreferences.getUserId();
 
-  // String de la ruta inicial de la MyApp, dependidndo de si hay sesión iniciada
-  // en shared preferences
+  // String de la ruta inicial de la MyApp, depende de si hay sesión iniciada:
+  // es decir datos de usuario en shared preferences
   String _initialRoute() {
     if (_userId == '0') {
       return '/login';
@@ -48,12 +48,12 @@ class MyApp extends StatelessWidget {
         primaryColor: Color(0xff458F2E),
         fontFamily: 'Rubik',
       ),
-      //initialRoute: '/start',
       initialRoute: _initialRoute(),
       routes: {
         "/login": (BuildContext context) => LoginScreen(),
         "/signup": (BuildContext context) => SignUpScreen(),
         "/password": (BuildContext context) => PasswordScreen(),
+        "/account_edit_menu": (BuildContext context) => AccountEditMenu(),
         "/user_picture": (BuildContext context) => UserPictureScreen(),
         "/users_search": (BuildContext context) => UsersSearch(),
         "/performance": (BuildContext context) => PerformanceScreen(),

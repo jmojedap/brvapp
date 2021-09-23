@@ -85,7 +85,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _goToProfileEdit(BuildContext context) {
-    Navigator.pushNamed(context, '/profile_edit');
+    Navigator.pushNamed(context, '/account_edit_menu');
   }
 
   Widget setBodyContent(context) {
@@ -104,16 +104,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           backgroundColor: Colors.white,
           backgroundImage: NetworkImage(userInfo['picture']),
           radius: 50,
-        ),
-        TextButton(
-          onPressed: () {
-            print('Abriendo profile picture');
-            Navigator.pushNamed(context, '/user_picture');
-          },
-          child: Text(
-            'Cambiar foto de perfil',
-            style: TextStyle(color: Colors.blue),
-          ),
         ),
         SizedBox(height: 12),
         Text(
