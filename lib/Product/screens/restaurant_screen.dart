@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:brave_app/Product/models/product_model.dart';
 import 'package:brave_app/Common/screens/bottom_bar_component.dart';
 import 'package:brave_app/Common/screens/drawer_component.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'dart:async';
-import 'dart:convert';
 import 'package:intl/intl.dart';
 
 class RestaurantScreen extends StatefulWidget {
@@ -44,12 +43,12 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
   Future<List<Product>> _getProducts() async {
     const String urlProducts =
         'https://www.bravebackend.com/api/products/get/?cat_1=5010';
-    final response = await http.get(Uri.parse(urlProducts));
+    final response = await Dio().get(urlProducts);
 
     List<Product> objProducts = [];
 
     if (response.statusCode == 200) {
-      final responseBody = jsonDecode(response.body);
+      final responseBody = response.data;
 
       for (var item in responseBody['list']) {
         objProducts.add(Product.fromJson(item));

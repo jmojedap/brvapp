@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:brave_app/Config/constants.dart';
 import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'dart:async';
-import 'dart:convert';
 import 'package:form_field_validator/form_field_validator.dart';
 
 class ProfileEditScreen extends StatefulWidget {
@@ -201,18 +200,16 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
   //Enviar datos de formulario y recibir datos de validación
   Future<Map> _sendForm() async {
-    var url = Uri.parse(kUrlApi + 'accounts/update/' + userInfo['userId']);
-    var response = await http.post(
-      url,
-      body: {
-        'display_name': _displayNameController.text,
-        'username': _usernameController.text,
-        'email': _emailController.text,
-      },
-    );
+    String url = kUrlApi + 'accounts/update/' + userInfo['userId'];
+    var formData = FormData.fromMap({
+      'display_name': _displayNameController.text,
+      'username': _usernameController.text,
+      'email': _emailController.text,
+    });
+    var response = await Dio().post(url, data: formData);
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      return response.data;
     } else {
       throw Exception('Error al actualizar datos de usuario');
     }

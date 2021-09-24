@@ -1,7 +1,6 @@
-import 'dart:convert';
 import 'package:flutter_clean_calendar/flutter_clean_calendar.dart';
 import 'package:brave_app/Config/constants.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'dart:async';
 
 class EventModel {
@@ -14,12 +13,12 @@ class EventModel {
 
   //Map con dia -> eventos CCE, para llenar Clear Calendar
   Future<Map<DateTime, List<CleanCalendarEvent>>> getEvents(userId) async {
-    var url = Uri.parse(kUrlApi + 'calendar/my_events/' + userId);
+    var url = kUrlApi + 'calendar/my_events/' + userId;
     print(url);
-    var response = await http.get(url);
+    var response = await Dio().get(url);
 
     if (response.statusCode == 200) {
-      final mapResponse = jsonDecode(response.body);
+      final mapResponse = response.data;
       final List _listDaysWithEvents = listDaysWithEvents(mapResponse);
 
       //Recorrer días y agregar eventos en formato CCE
@@ -68,15 +67,14 @@ class EventModel {
 
   //Map información de un evento
   Future<Map> getReservatonInfo(eventId, userId) async {
-    var url = Uri.parse(kUrlApi + 'reservations/get_info/$eventId/$userId');
+    var url = kUrlApi + 'reservations/get_info/$eventId/$userId';
     print(url);
-    var response = await http.get(url);
+    var response = await Dio().get(url);
 
     if (response.statusCode == 200) {
-      final decodedResponse = jsonDecode(response.body);
+      final decodedResponse = response.data;
       Map eventInfo = decodedResponse['reservation'];
       print(eventInfo);
-
       return eventInfo;
     } else {
       throw Exception('Error al solicitar información del evento');
@@ -85,17 +83,16 @@ class EventModel {
 
   //Map respuesta cancelación de una reservación
   Future<Map> cancelReservation(eventId, trainingId) async {
-    var url = Uri.parse(kUrlApi + 'reservations/cancel/$eventId/$trainingId');
+    String url = kUrlApi + 'reservations/cancel/$eventId/$trainingId';
     print(url);
-    var response = await http.get(url);
+    var response = await Dio().get(url);
 
     if (response.statusCode == 200) {
-      final mapResponse = jsonDecode(response.body);
+      final mapResponse = response.data;
       print(mapResponse);
-
       return mapResponse;
     } else {
-      throw Exception('Error al cancelar un ');
+      throw Exception('Error al cancelar una reserva');
     }
   }
 }

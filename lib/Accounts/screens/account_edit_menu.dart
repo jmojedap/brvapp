@@ -14,7 +14,7 @@ class AccountEditMenu extends StatelessWidget {
               leading: Icon(Icons.person_outline),
               title: Text('Perfil'),
               onTap: () {
-                Navigator.pushNamed(context, '/profile_edit');
+                Navigator.pushNamed(context, '/edit_profile');
               },
             ),
             ListTile(

@@ -5,8 +5,8 @@ import 'package:brave_app/Accounts/screens/login_screen.dart';
 import 'package:brave_app/Accounts/screens/account_edit_menu.dart';
 import 'package:brave_app/Accounts/screens/password_screen.dart';
 import 'package:brave_app/Accounts/screens/user_picture_screen.dart';
+import 'package:brave_app/Accounts/screens/edit_profile_screen.dart';
 import 'package:brave_app/User/screens/profile_screen.dart';
-import 'package:brave_app/User/screens/profile_edit_screen.dart';
 import 'package:brave_app/User/screens/subscription_status_screen.dart';
 import 'package:brave_app/User/screens/users_search.dart';
 import 'package:brave_app/User/screens/performance_screen.dart';
@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
         "/users_search": (BuildContext context) => UsersSearch(),
         "/performance": (BuildContext context) => PerformanceScreen(),
         "/profile": (BuildContext context) => ProfileScreen(),
-        "/profile_edit": (BuildContext context) => ProfileEditScreen(),
+        "/edit_profile": (BuildContext context) => EditProfileScreen(),
         "/subscription_status": (BuildContext context) =>
             SubscriptionStatusScreen(),
         "/posts_feed_screen": (BuildContext context) => PostsFeedScreen(),

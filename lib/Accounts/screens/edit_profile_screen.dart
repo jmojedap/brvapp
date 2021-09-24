@@ -1,36 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:brave_app/Config/constants.dart';
-import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
-import 'package:brave_app/Accounts/models/account_model.dart';
-import 'package:brave_app/Config/validation.dart';
 import 'dart:async';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:brave_app/Config/validation.dart';
+import 'package:brave_app/Accounts/models/account_model.dart';
+import 'package:brave_app/Config/constants.dart';
+import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
 
-class PasswordScreen extends StatefulWidget {
+class EditProfileScreen extends StatefulWidget {
   //const ProfileScreen({Key key}) : super(key: key);
 
   @override
-  _PasswordScreenState createState() => _PasswordScreenState();
+  _EditProfileScreenState createState() => _EditProfileScreenState();
 }
 
-class _PasswordScreenState extends State<PasswordScreen> {
+class _EditProfileScreenState extends State<EditProfileScreen> {
 // Variables
 //--------------------------------------------------------------------------
 
   Future<Map> _updateResponse;
   bool _loading = false;
 
-  TextEditingController _currentPasswordController;
-  TextEditingController _newPasswordController;
-  TextEditingController _newPasswordConfirmationController;
+  TextEditingController _displayNameController;
+  TextEditingController _usernameController;
+  TextEditingController _emailController;
 
-  final _changePasswordFormKey = GlobalKey<FormState>();
+  final _updateProfileFormKey = GlobalKey<FormState>();
   final _scaffKey = GlobalKey<ScaffoldState>();
 
 // Obtener datos de usuario por SharedPreferences
 //--------------------------------------------------------------------------
-  String userId = '';
-  //Map<String, String> userInfo = {'userId': ''};
+  Map<String, String> userInfo = {
+    'userId': UserSimplePreferences.getUserId(),
+    'displayName': UserSimplePreferences.getUserDisplayName(),
+    'username': UserSimplePreferences.getUsername(),
+    'email': UserSimplePreferences.getUserEmail(),
+  };
 
   @override
   void initState() {
@@ -41,12 +45,11 @@ class _PasswordScreenState extends State<PasswordScreen> {
   /* Cargar datos de usuario de SharedPreferences */
   void _loadProfileData() async {
     setState(() {
-      userId = UserSimplePreferences.getUserId();
-
       //Establecer valores en controladores
-      _currentPasswordController = TextEditingController();
-      _newPasswordController = TextEditingController();
-      _newPasswordConfirmationController = TextEditingController();
+      _displayNameController =
+          TextEditingController(text: userInfo['displayName']);
+      _usernameController = TextEditingController(text: userInfo['username']);
+      _emailController = TextEditingController(text: userInfo['email']);
     });
   }
 
@@ -66,16 +69,16 @@ class _PasswordScreenState extends State<PasswordScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 _buttonsTop(context),
-                SizedBox(height: 6),
+                SizedBox(height: 16),
                 Form(
-                  key: _changePasswordFormKey,
+                  key: _updateProfileFormKey,
                   child: Column(
                     children: [
-                      _currentPasswordField(),
-                      SizedBox(height: 18),
-                      _newPasswordField(),
-                      SizedBox(height: 18),
-                      _newPasswordConfirmationField(),
+                      _displayNameField(),
+                      SizedBox(height: 15),
+                      _userNameField(),
+                      SizedBox(height: 15),
+                      _emailField(),
                     ],
                   ),
                 ),
@@ -113,13 +116,11 @@ class _PasswordScreenState extends State<PasswordScreen> {
     );
   }
 
-  Widget _currentPasswordField() {
+  Widget _displayNameField() {
     return TextFormField(
-      enabled: !_loading,
-      obscureText: true,
-      controller: _currentPasswordController,
+      controller: _displayNameController,
       decoration: InputDecoration(
-        labelText: 'Contraseña actual',
+        labelText: 'Nombre',
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -130,28 +131,24 @@ class _PasswordScreenState extends State<PasswordScreen> {
     );
   }
 
-  Widget _newPasswordField() {
+  Widget _userNameField() {
     return TextFormField(
-      enabled: !_loading,
-      obscureText: true,
-      controller: _newPasswordController,
+      controller: _usernameController,
       decoration: InputDecoration(
-        labelText: 'Contraseña nueva',
-      ),
-      validator: kPasswordValidator,
-    );
-  }
-
-  Widget _newPasswordConfirmationField() {
-    return TextFormField(
-      enabled: !_loading,
-      obscureText: true,
-      controller: _newPasswordConfirmationController,
-      decoration: InputDecoration(
-        labelText: 'Repetir contraseña nueva',
+        labelText: 'Nombre de usuario',
       ),
       validator:
           RequiredValidator(errorText: 'Por favor complete esta casilla'),
+    );
+  }
+
+  Widget _emailField() {
+    return TextFormField(
+      controller: _emailController,
+      decoration: InputDecoration(
+        labelText: 'Correo electrónico',
+      ),
+      validator: kRequiredEmailValidator,
     );
   }
 
@@ -163,36 +160,46 @@ class _PasswordScreenState extends State<PasswordScreen> {
     setState(() => _loading = true);
 
     //Validar casillas del formulario
-    if (_changePasswordFormKey.currentState.validate()) {
-      _changePasswordFormKey.currentState.save();
+    if (_updateProfileFormKey.currentState.validate()) {
+      _updateProfileFormKey.currentState.save();
 
       //Enviar formulario
-      _updateResponse = AccountModel().changePassword(
-        userId,
+      _updateResponse = AccountModel().updateProfile(
+        userInfo['userId'],
         {
-          'current_password': _currentPasswordController.text,
-          'password': _newPasswordController.text,
-          'passconf': _newPasswordConfirmationController.text,
+          'display_name': _displayNameController.text,
+          'username': _usernameController.text,
+          'email': _emailController.text,
         },
       );
 
       //Al recibir respuesta
       _updateResponse.then(
-        (responseBody) {
+        (updateData) {
           setState(() => _loading = false);
-          if (responseBody['status'] == 1) {
+
+          if (updateData['status'] == 1) {
+            _updateSharedPreferences();
             _showSuccessSnackBar(context);
             Navigator.of(context).pop();
           } else {
-            _showValidationErrorDialog(responseBody['error']);
+            print('Error en la actualización');
+            _showValidationErrorDialog(updateData['validation_data']);
           }
         },
       );
     }
   }
 
+  //Actualizar datos de cuenta de usuario en SharedPreferences
+  void _updateSharedPreferences() async {
+    UserSimplePreferences.setUserDisplayName(_displayNameController.text);
+    UserSimplePreferences.setUserEmail(_emailController.text);
+    UserSimplePreferences.setUsername(_usernameController.text);
+  }
+
   //Mostrar diálogo con error de validación
-  void _showValidationErrorDialog(errorText) {
+  void _showValidationErrorDialog(validationData) {
     setState(() {});
 
     showDialog(
@@ -202,7 +209,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
           'Información',
           style: TextStyle(color: Colors.redAccent),
         ),
-        content: Text(errorText),
+        content: Text(validationData['error']),
       ),
     );
   }
@@ -210,7 +217,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
   // Mostrar SnackBar con resultado de actualización de datos en BackEnd
   void _showSuccessSnackBar(context) {
     SnackBar snackBar = SnackBar(
-      content: Text('Contraseña modificada'),
+      content: Text('Cambios guardados'),
       backgroundColor: Colors.green,
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);

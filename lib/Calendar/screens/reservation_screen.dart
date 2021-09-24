@@ -2,9 +2,8 @@ import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:brave_app/Common/screens/bottom_bar_component.dart';
 import 'package:brave_app/Config/constants.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'dart:async';
-import 'dart:convert';
 //import 'package:brave_app/Calendar/models/day_model.dart';
 
 class ReservationScreen extends StatefulWidget {
@@ -152,12 +151,12 @@ class _ReservationScreenState extends State<ReservationScreen> {
   //Requerir a API listado días de entrenamiento
   Future<List<Map>> _getTrainingDays(String userId) async {
     final String urlDays = kUrlApi + 'reservations/get_training_days/$userId';
-    final response = await http.get(Uri.parse(urlDays));
+    final response = await Dio().get(urlDays);
 
     List<Map> daysList = [];
 
     if (response.statusCode == 200) {
-      final responseBody = jsonDecode(response.body);
+      final responseBody = response.data;
 
       for (var item in responseBody['days']) {
         daysList.add(item);
@@ -245,12 +244,12 @@ class _ReservationScreenState extends State<ReservationScreen> {
     final String urlRooms =
         kUrlApi + 'reservations/get_available_rooms/$dayId/$userId';
     print(urlRooms);
-    final response = await http.get(Uri.parse(urlRooms));
+    final response = await Dio().get(urlRooms);
 
     List<Map> roomsList = [];
 
     if (response.statusCode == 200) {
-      final responseBody = jsonDecode(response.body);
+      final responseBody = response.data;
 
       for (var item in responseBody['rooms']) {
         roomsList.add(item);
@@ -325,12 +324,12 @@ class _ReservationScreenState extends State<ReservationScreen> {
   Future<List<Map>> _getTrainings(String dayId, String roomId) async {
     final String urlTrainings =
         kUrlApi + 'trainings/get_trainings/$dayId/$roomId';
-    final response = await http.get(Uri.parse(urlTrainings));
+    final response = await Dio().get(urlTrainings);
 
     List<Map> trainingsList = [];
 
     if (response.statusCode == 200) {
-      final responseBody = jsonDecode(response.body);
+      final responseBody = response.data;
 
       for (var item in responseBody['list']) {
         trainingsList.add(item);
@@ -439,11 +438,11 @@ class _ReservationScreenState extends State<ReservationScreen> {
   //Enviar datos de formulario y recibir datos de validación
   Future<Map> _saveReservation() async {
     String trainingId = _trainingSelection['id'];
-    var url = Uri.parse(kUrlApi + 'reservations/save/$trainingId/$userId');
-    var response = await http.get(url);
+    String url = kUrlApi + 'reservations/save/$trainingId/$userId';
+    var response = await Dio().get(url);
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      return response.data;
     } else {
       throw Exception('Error al guardar reservación');
     }

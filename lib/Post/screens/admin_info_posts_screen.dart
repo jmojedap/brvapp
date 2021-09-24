@@ -15,7 +15,7 @@ class _AdminInfoPostsScreenState extends State<AdminInfoPostsScreen> {
   bool loading = false;
   String currentSection = 'loading_no';
   PostsTools postsTools = PostsTools();
-  Future<List> futurePosts;
+  Future<Map> futurePosts;
   List responsePosts = [
     {'title': '', 'content': '', 'url_image': kDefaultPostPicture}
   ];
@@ -25,7 +25,7 @@ class _AdminInfoPostsScreenState extends State<AdminInfoPostsScreen> {
     super.initState();
     futurePosts = postsTools.getAdminInfoPosts();
     futurePosts.then((response) {
-      responsePosts = response;
+      responsePosts = response['posts'];
       loading = false;
       currentSection = 'postContent';
       setState(() {

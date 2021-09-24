@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:brave_app/Config/constants.dart';
 import 'package:brave_app/Common/screens/bottom_bar_component.dart';
 import 'package:brave_app/Common/screens/drawer_component.dart';
-import 'package:http/http.dart' as http;
-import 'dart:async';
+import 'package:dio/dio.dart';
 import 'dart:convert';
 
 class ProfileScreen extends StatefulWidget {
@@ -196,13 +195,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   //Solicitud de información de following del usuario
   Future<Map> _getFollowInfo(String userId) async {
     print(userId);
-    var url =
-        Uri.parse(kUrlApi + 'accounts/profile_info/' + userId + '/general');
+    var url = kUrlApi + 'accounts/profile_info/' + userId + '/general';
     print(url);
-    var response = await http.get(url);
+    var response = await Dio().get(url);
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      return response.data;
     } else {
       throw Exception('Error al requerir información de usuario');
     }

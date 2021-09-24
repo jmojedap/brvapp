@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:brave_app/Common/screens/bottom_bar_component.dart';
 import 'package:brave_app/Common/screens/drawer_component.dart';
 import 'package:brave_app/Common/models/Publicacion.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'dart:async';
-import 'dart:convert';
 
 class PostsFeedScreen extends StatefulWidget {
   //PostsFeedScreen({Key? key}) : super(key: key);
@@ -55,23 +54,18 @@ class _PostsFeedScreenState extends State<PostsFeedScreen> {
 
   Future<List<Publicacion>> _getPublicaciones() async {
     const String urlPublicaciones = 'https://bravebackend.com/api/posts/get';
-    final response = await http.get(Uri.parse(urlPublicaciones));
+    final response = await Dio().get(urlPublicaciones);
 
     List<Publicacion> objPublicaciones = [];
 
     if (response.statusCode == 200) {
-      // If the server did return a 200 OK response,
-      // then parse the JSON.
-      final responseBody = jsonDecode(response.body);
-
+      final responseBody = response.data;
       for (var item in responseBody['list']) {
         objPublicaciones.add(Publicacion.fromJson(item));
       }
 
       return objPublicaciones;
     } else {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
       throw Exception('Failed to load Publicacion');
     }
   }

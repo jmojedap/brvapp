@@ -1,9 +1,8 @@
 import 'package:brave_app/User/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:brave_app/Common/screens/bottom_bar_component.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
 
 class UsersSearch extends StatefulWidget {
@@ -124,14 +123,15 @@ class _UsersSearchState extends State<UsersSearch> {
 //--------------------------------------------------------------------------
 
   //Función de solicitud de JSON usuarios
-  Future<List<User>> _getUsers(text) async {
-    var urlUsers = Uri.parse('https://www.bravebackend.com/api/users/get/');
-    var response = await http.post(urlUsers, body: {'q': text});
+  Future<List<User>> _getUsers(String text) async {
+    String urlUsers = 'https://www.bravebackend.com/api/users/get/';
+    var formData = FormData.fromMap({'7': text});
+    var response = await Dio().post(urlUsers, data: formData);
 
     List<User> objUsers = [];
 
     if (response.statusCode == 200) {
-      final responseBody = jsonDecode(response.body);
+      final responseBody = response.data;
 
       for (var item in responseBody['list']) {
         objUsers.add(User.fromJson(item));

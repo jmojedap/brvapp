@@ -1,9 +1,9 @@
 import 'package:brave_app/Follow/models/FollowerModel.dart';
 import 'package:flutter/material.dart';
 import 'package:brave_app/Common/screens/bottom_bar_component.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'dart:async';
-import 'dart:convert';
+//import 'dart:convert';
 import 'dart:math';
 
 class FollowersScreen extends StatefulWidget {
@@ -65,12 +65,12 @@ class _FollowersScreenState extends State<FollowersScreen> {
   Future<List<Follower>> _getFollowers() async {
     const String urlFollowers =
         'https://www.bravebackend.com/api/follow/get_followers/202019';
-    final response = await http.get(Uri.parse(urlFollowers));
+    final response = await Dio().get(urlFollowers);
 
     List<Follower> objFollowers = [];
 
     if (response.statusCode == 200) {
-      final responseBody = jsonDecode(response.body);
+      final responseBody = response.data;
 
       for (var item in responseBody['users']) {
         objFollowers.add(Follower.fromJson(item));
@@ -140,12 +140,12 @@ class _FollowersScreenState extends State<FollowersScreen> {
   Future<List<Follower>> _getFollowing() async {
     const String urlFollowing =
         'https://www.bravebackend.com/api/follow/get_following/202019';
-    final response = await http.get(Uri.parse(urlFollowing));
+    final response = await Dio().get(urlFollowing);
 
     List<Follower> objFollowing = [];
 
     if (response.statusCode == 200) {
-      final responseBody = jsonDecode(response.body);
+      final responseBody = response.data;
 
       for (var item in responseBody['users']) {
         objFollowing.add(Follower.fromJson(item));

@@ -34,12 +34,25 @@ class AccountModel {
     }
   }
 
+  //Actualizar los datos básicos del perfil de usuario en el BackEnd
+  //2021-09-24
+  Future<Map> updateProfile(String userId, bodyData) async {
+    String url = kUrlApi + 'accounts/update/$userId';
+    print(url);
+    var formData = FormData.fromMap(bodyData);
+    var response = await Dio().post(url, data: formData);
+
+    if (response.statusCode == 200) {
+      return response.data;
+    } else {
+      throw Exception('Error al actualizar datos de usuario');
+    }
+  }
+
   //Establecer una imagen de perfil de usuario
   //2021-09-21
   Future<Map> setPicture(String userId, String userKey, filepath) async {
     var url = kUrlApi + 'accounts/set_image/$userId/$userKey';
-    print(filepath);
-    print(url);
     var formData = FormData.fromMap({
       'file_field':
           await MultipartFile.fromFile(filepath, filename: 'user_picture.jpg')
@@ -51,6 +64,23 @@ class AccountModel {
       return response.data;
     } else {
       throw Exception('Error al cargar imagen de perfil de $userId');
+    }
+  }
+
+  //Enviar datos de formulario y recibir datos de validación
+  Future<Map> changePassword(String userId, bodyData) async {
+    var url = kUrlApi + 'accounts/change_password/$userId';
+    print(url);
+    var formData = FormData.fromMap(bodyData);
+    print('formData:');
+    print(formData.fields);
+    var response = await Dio().post(url, data: formData);
+
+    if (response.statusCode == 200) {
+      print(response.data);
+      return response.data;
+    } else {
+      throw Exception('Error al actualizar la contraseña');
     }
   }
 }
