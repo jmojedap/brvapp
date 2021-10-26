@@ -40,10 +40,9 @@ class _BottomBarComponentState extends State<BottomBarComponent> {
       onTap: onTapTapped,
       currentIndex: widget.indexTap,
       items: [
-        BottomNavigationBarItem(icon: Icon(Icons.home), title: Text('')),
-        BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today), title: Text('')),
-        BottomNavigationBarItem(icon: Icon(Icons.person), title: Text('')),
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+        BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: ''),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
       ],
     );
   }

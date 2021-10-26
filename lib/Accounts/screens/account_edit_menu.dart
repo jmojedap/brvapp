@@ -18,10 +18,17 @@ class AccountEditMenu extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.person_pin_rounded),
+              leading: Icon(Icons.account_circle_outlined),
               title: Text('Foto de perfil'),
               onTap: () {
                 Navigator.pushNamed(context, '/user_picture');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.one_x_mobiledata_outlined),
+              title: Text('Número de documento'),
+              onTap: () {
+                Navigator.pushNamed(context, '/edit_document');
               },
             ),
             ListTile(

@@ -1,6 +1,7 @@
 import 'package:brave_app/Config/constants.dart';
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
 
 class AccountModel {
   //Validar usuario y contraseña para iniciar sesión de usuario
@@ -23,6 +24,7 @@ class AccountModel {
   //2021-09-21
   Future<Map> signUp(Map formData) async {
     var url = kUrlApi + 'accounts/register';
+    print(url);
     var data = FormData.fromMap(formData);
 
     var response = await Dio().post(url, data: data);
@@ -37,10 +39,15 @@ class AccountModel {
   //Actualizar los datos básicos del perfil de usuario en el BackEnd
   //2021-09-24
   Future<Map> updateProfile(String userId, bodyData) async {
-    String url = kUrlApi + 'accounts/update/$userId';
+    String appendAuth = UserSimplePreferences.getAppendAuth();
+    String url = kUrlApi + 'accounts/update/$userId/?$appendAuth';
     print(url);
     var formData = FormData.fromMap(bodyData);
-    var response = await Dio().post(url, data: formData);
+    var response = await Dio().post(
+      url,
+      data: formData,
+      options: Options(contentType: Headers.formUrlEncodedContentType),
+    );
 
     if (response.statusCode == 200) {
       return response.data;
@@ -51,8 +58,10 @@ class AccountModel {
 
   //Establecer una imagen de perfil de usuario
   //2021-09-21
-  Future<Map> setPicture(String userId, String userKey, filepath) async {
-    var url = kUrlApi + 'accounts/set_image/$userId/$userKey';
+  Future<Map> setPicture(filepath) async {
+    String appendAuth = UserSimplePreferences.getAppendAuth();
+    var url = kUrlApi + 'accounts/set_image/?$appendAuth';
+    print(url);
     var formData = FormData.fromMap({
       'file_field':
           await MultipartFile.fromFile(filepath, filename: 'user_picture.jpg')
@@ -60,20 +69,18 @@ class AccountModel {
     var response = await Dio().post(url, data: formData);
 
     if (response.statusCode == 200) {
-      print(response);
       return response.data;
     } else {
-      throw Exception('Error al cargar imagen de perfil de $userId');
+      throw Exception('Error al cargar imagen de perfil del usuario');
     }
   }
 
   //Enviar datos de formulario y recibir datos de validación
   Future<Map> changePassword(String userId, bodyData) async {
-    var url = kUrlApi + 'accounts/change_password/$userId';
+    String appendAuth = UserSimplePreferences.getAppendAuth();
+    String url = kUrlApi + 'accounts/change_password/?' + appendAuth;
     print(url);
     var formData = FormData.fromMap(bodyData);
-    print('formData:');
-    print(formData.fields);
     var response = await Dio().post(url, data: formData);
 
     if (response.statusCode == 200) {

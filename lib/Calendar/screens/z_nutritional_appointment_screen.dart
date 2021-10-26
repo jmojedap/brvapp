@@ -3,46 +3,42 @@ import 'package:flutter/material.dart';
 import 'package:brave_app/Common/screens/bottom_bar_component.dart';
 import 'package:brave_app/Config/constants.dart';
 import 'dart:async';
-import 'package:brave_app/Calendar/models/reservation_tools.dart';
+import 'package:brave_app/Calendar/models/calendar_tools.dart';
+import 'package:intl/intl.dart';
 
-class ReservationScreen extends StatefulWidget {
+class NutritionalAppointmentScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _ReservationScreenState();
+    return _NutritionalAppointmentScreenState();
   }
 }
 
-class _ReservationScreenState extends State<ReservationScreen> {
+class _NutritionalAppointmentScreenState
+    extends State<NutritionalAppointmentScreen> {
 // Variables
 //--------------------------------------------------------------------------
-  String userId;
+  String userId = UserSimplePreferences.getUserId();
+  String userKey = UserSimplePreferences.getUserKey();
   String saveReservationError = '';
 
   int _step = 1;
-  String titleAppBar = 'Reservar entrenamiento';
+  String titleAppBar = 'Reservar cita';
 
   int _keyDay = -1;
   Map _daySelection = {'id': '0', 'title': ''};
-  Future<List<Map>> _trainingDays;
+  Future<List<Map>> _appointmentDays;
 
-  int _keyRoom = -1;
-  Map _roomSelection = {'id': '0', 'title': ''};
-  Future<List<Map>> _roomsFuture;
-  List<Map> _rooms;
-
-  int _keyTraining = -1;
-  Map _trainingSelection = {'id': '0', 'title': ''};
-  Future<List<Map>> _trainingsFuture;
-  List<Map> _trainings;
+  int _keyAppointment = -1;
+  Map _appointmentSelection = {'id': '0', 'title': ''};
+  Future<List<Map>> _appointmentsFuture;
+  List<Map> _appointments;
 
   Future<Map> _saveReservationResponse;
 
   @override
   void initState() {
     super.initState();
-    userId = UserSimplePreferences.getUserId() ?? '0';
-    //_trainingDays = _getTrainingDays(userId);
-    _trainingDays = ReservationTools().getTrainingDays(userId);
+    _appointmentDays = CalendarTools().getAppointmentsDays(userId, '221');
   }
 
 // Constructor Scaffold
@@ -66,20 +62,12 @@ class _ReservationScreenState extends State<ReservationScreen> {
                   selected: _step == 1,
                 ),
                 ListTile(
-                  leading: Icon(Icons.room_outlined),
-                  title: Text(_roomSelection['title']),
-                  subtitle: Text('Zona'),
+                  leading: Icon(Icons.watch_later_outlined),
+                  title: Text(_appointmentSelection['title']),
+                  subtitle: Text('Hora'),
                   onTap: () => _setStep(2),
                   selected: _step == 2,
                   enabled: _step >= 2,
-                ),
-                ListTile(
-                  leading: Icon(Icons.watch_later_outlined),
-                  title: Text(_trainingSelection['title']),
-                  subtitle: Text('Hora'),
-                  onTap: () => _setStep(3),
-                  selected: _step == 3,
-                  enabled: _step >= 3,
                 ),
                 Container(
                   decoration: BoxDecoration(
@@ -94,7 +82,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
               ],
             ),
             Container(
-              margin: EdgeInsets.only(top: 230),
+              margin: EdgeInsets.only(top: 160),
               child: _setBody(),
             ),
           ],
@@ -118,23 +106,16 @@ class _ReservationScreenState extends State<ReservationScreen> {
   //Establecer el contenido del body, seleccion de elemento
   _setBody() {
     if (_step == 1) {
-      _keyRoom = -1;
-      _roomSelection = {'id': '0', 'title': ''};
-      _keyTraining = -1;
-      _trainingSelection = {'id': '0', 'title': ''};
+      _keyAppointment = -1;
+      _appointmentSelection = {'id': '0', 'title': ''};
       return stepDays();
     } else if (_step == 2) {
-      _keyTraining = -1;
-      _trainingSelection = {'id': '0', 'title': ''};
-      titleAppBar = 'Selecciona la zona';
-      return stepRooms();
-    } else if (_step == 3) {
       titleAppBar = 'Selecciona el horario';
-      return stepTrainings();
-    } else if (_step == 4) {
-      titleAppBar = 'Confirma';
+      return stepAppointments();
+    } else if (_step == 3) {
+      titleAppBar = 'Verifica y confirma';
       return stepConfirm();
-    } else if (_step == 5) {
+    } else if (_step == 4) {
       return stepConfirmed();
     } else if (_step == 11) {
       return stepError();
@@ -151,12 +132,12 @@ class _ReservationScreenState extends State<ReservationScreen> {
   //Widget ListView, selección de día
   Widget stepDays() {
     return FutureBuilder(
-      future: _trainingDays,
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
-          return ListView(children: _daysWidgetList(snapshot.data));
-        } else if (snapshot.hasError) {
-          return Text("${snapshot.error}");
+      future: _appointmentDays,
+      builder: (BuildContext context, AsyncSnapshot snapshotDays) {
+        if (snapshotDays.hasData) {
+          return ListView(children: _daysWidgetList(snapshotDays.data));
+        } else if (snapshotDays.hasError) {
+          return Text("${snapshotDays.error}");
         }
 
         // Por defecto, indicador carga en proceso
@@ -173,9 +154,9 @@ class _ReservationScreenState extends State<ReservationScreen> {
       (index, item) {
         Icon _icono = Icon(Icons.radio_button_off);
         String _subtitleText = '';
-        if (item['qty_user_reservations'] > 0) {
+        /*if (item['qty_user_reservations'] > 0) {
           _subtitleText = 'Ya tienes una reserva';
-        }
+        }*/
         if (index == _keyDay) _icono = Icon(Icons.radio_button_checked);
 
         Widget dayTile = ListTileTheme(
@@ -185,14 +166,14 @@ class _ReservationScreenState extends State<ReservationScreen> {
             leading: _icono,
             title: Text(item['period_name']),
             selected: index == _keyDay,
-            enabled: item['qty_user_reservations'] == 0,
+            //enabled: item['qty_user_reservations'] == 0,
             subtitle: Text(_subtitleText),
             onTap: () {
               setState(() {
                 _keyDay = index;
                 _daySelection['id'] = item['id'];
                 _daySelection['title'] = item['period_name'];
-                _setRooms();
+                _setAppointments();
               });
             },
           ),
@@ -205,103 +186,45 @@ class _ReservationScreenState extends State<ReservationScreen> {
     return days;
   }
 
-// Paso 2: Selección de Zona
+// Paso 2: Selección de citas, horarios
 //------------------------------------------------------------------------------
-
-  void _setRooms() {
+  void _setAppointments() {
     _setStep(99); //Loading indicator
-    _roomsFuture = ReservationTools().getRooms(_daySelection['id'], userId);
+    _appointmentsFuture =
+        CalendarTools().getAppointments(_daySelection['id'], '');
 
-    _roomsFuture.then((data) {
-      _rooms = data;
-      print(_rooms);
+    _appointmentsFuture.then((data) {
+      _appointments = data;
       _setStep(2);
     });
   }
 
-  //Widget ListView, selección de zona de entrenamiento
-  Widget stepRooms() {
+  Widget stepAppointments() {
     return ListView.builder(
-      itemCount: _rooms.length,
-      itemBuilder: (BuildContext context, int index) {
-        Color _iconColor = Colors.white;
-        if (_rooms[index]['available'] == 1) _iconColor = Colors.black38;
-        Icon _icono = Icon(Icons.radio_button_off, color: _iconColor);
-        if (index == _keyRoom) {
-          _icono = Icon(Icons.radio_button_checked, color: _iconColor);
-        }
-        return ListTileTheme(
-          selectedTileColor: Colors.green,
-          selectedColor: Colors.white,
-          child: ListTile(
-            leading: _icono,
-            title: titleRoom(_rooms[index]),
-            enabled: _rooms[index]['available'] == 1,
-            selected: index == _keyRoom,
-            onTap: () {
-              setState(() {
-                _keyRoom = index;
-                _roomSelection['id'] = _rooms[index]['room_id'];
-                _roomSelection['title'] = _rooms[index]['name'];
-                print(_keyRoom);
-                _setTrainings();
-              });
-            },
-          ),
-        );
-      },
-    );
-  }
-
-  Widget titleRoom(Map room) {
-    return Row(
-      children: [
-        Container(
-          margin: EdgeInsets.only(right: 12),
-          width: 6,
-          height: 24,
-          color: kBgColors['room_' + room['room_id']],
-        ),
-        Text(room['name']),
-      ],
-    );
-  }
-
-// Paso 3: Selección de Training
-//------------------------------------------------------------------------------
-  void _setTrainings() {
-    _setStep(99); //Loading indicator
-    _trainingsFuture = ReservationTools()
-        .getTrainings(_daySelection['id'], _roomSelection['id']);
-
-    _trainingsFuture.then((data) {
-      _trainings = data;
-      _setStep(3);
-    });
-  }
-
-  Widget stepTrainings() {
-    return ListView.builder(
-      itemCount: _trainings.length,
+      itemCount: _appointments.length,
       itemBuilder: (BuildContext context, int index) {
         Icon _icono = Icon(Icons.radio_button_off);
-        if (index == _keyTraining) _icono = Icon(Icons.radio_button_checked);
+        if (index == _keyAppointment) _icono = Icon(Icons.radio_button_checked);
+        // Hora de inicio
+        DateTime _appointmentStart =
+            DateTime.parse(_appointments[index]['start']);
+        // Hora de inicio texto con formato
+        String _appointmentHourStart =
+            DateFormat('kk:mm a').format(_appointmentStart);
         return ListTileTheme(
           selectedTileColor: Colors.green,
           selectedColor: Colors.white,
           child: ListTile(
             leading: _icono,
-            title: Text(_trainings[index]['title']),
-            subtitle: _spotsWidget(_trainings[index]['total_spots'],
-                _trainings[index]['available_spots']),
-            enabled: _trainings[index]['active'] == 1,
-            selected: index == _keyTraining,
+            title: Text(_appointmentHourStart),
+            enabled: _appointments[index]['active'] == 1,
+            selected: index == _keyAppointment,
             onTap: () {
               setState(() {
-                _keyTraining = index;
-                _trainingSelection['id'] = _trainings[index]['id'];
-                _trainingSelection['title'] = _trainings[index]['title'];
-                _setStep(4);
+                _keyAppointment = index;
+                _appointmentSelection['id'] = _appointments[index]['id'];
+                _appointmentSelection['title'] = _appointmentHourStart;
+                _setStep(3);
               });
             },
           ),
@@ -310,51 +233,29 @@ class _ReservationScreenState extends State<ReservationScreen> {
     );
   }
 
-  //Widet Subtítulo Trainings, cupos disponibles
-  Widget _spotsWidget(int totalSpots, int availableSpots) {
-    double takenWidth = 0;
-    double availableWidth = 100;
-
-    availableWidth = 100 * (availableSpots / totalSpots);
-    takenWidth = 100 - availableWidth;
-
-    return Row(
-      children: [
-        Text(availableSpots.toString() + ' cupos'),
-        SizedBox(width: 10),
-        Container(
-          height: 10,
-          width: takenWidth,
-          color: kBgColors['appSecondary'],
-        ),
-        Container(
-          height: 10,
-          width: availableWidth,
-          color: Colors.black12,
-        ),
-      ],
-    );
-  }
-
-// Paso 4: Requerir confirmación
+// Paso 3: Requerir confirmación
 //--------------------------------------------------------------------------
   Widget stepConfirm() {
     return Center(
       child: Column(
         children: [
+          Container(
+            child: Text('Reserva tu cita de Control Nutricional'),
+            padding: EdgeInsets.all(20),
+          ),
           SizedBox(
             width: 180,
             height: 50,
             child: ElevatedButton(
               onPressed: () {
                 _setStep(99); //Loading indicator
-                _saveReservationResponse = ReservationTools()
-                    .saveReservation(_trainingSelection['id'], userId);
+                _saveReservationResponse = CalendarTools()
+                    .reservateAppointment(_appointmentSelection['id'], userId);
 
                 _saveReservationResponse.then((response) {
                   print(response);
-                  if (response['saved_id'] > 0) {
-                    _setStep(5);
+                  if (response['status'] == 1) {
+                    _setStep(4);
                   } else {
                     saveReservationError = response['error'];
                     _setStep(11);
@@ -370,16 +271,15 @@ class _ReservationScreenState extends State<ReservationScreen> {
               ),
             ),
           ),
-          SizedBox(height: 20),
         ],
       ),
     );
   }
 
-// Paso 5: Mostrar resultado confirmación
+// Paso 4: Mostrar resultado confirmación
 //------------------------------------------------------------------------------
 
-  //Resultado de éxito al crear una reservación
+  //Resultado de éxito al reservar una cita
   Widget stepConfirmed() {
     return SizedBox(
       width: double.infinity,
@@ -388,7 +288,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
         children: [
           Icon(Icons.check_circle, size: 36, color: Colors.blue),
           SizedBox(height: 15),
-          Text('Reserva confirmada', style: TextStyle(fontSize: 28)),
+          Text('Cita reservada', style: TextStyle(fontSize: 28)),
           SizedBox(height: 15),
           ElevatedButton(
             onPressed: () {
@@ -402,7 +302,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
     );
   }
 
-  //Resultado del intento de crear una reservación si hubo error.
+  //Resultado del intento reservar una cita, si hubo error.
   Widget stepError() {
     return Container(
       padding: EdgeInsets.all(12),

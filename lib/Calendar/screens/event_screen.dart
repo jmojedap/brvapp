@@ -2,6 +2,7 @@ import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
 import 'package:brave_app/Config/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:brave_app/Calendar/models/event_model.dart';
+import 'package:brave_app/Calendar/models/calendar_tools.dart';
 import 'package:intl/intl.dart';
 
 class EventScreen extends StatefulWidget {
@@ -13,11 +14,17 @@ class EventScreen extends StatefulWidget {
 }
 
 class _EventScreenState extends State<EventScreen> {
-  String userId = UserSimplePreferences.getUserId() ?? '0';
+  String userId = UserSimplePreferences.getUserId();
+  String userKey = UserSimplePreferences.getUserKey();
   String section = 'info';
   EventModel eventModel = EventModel();
   Future<Map> futureEventInfo;
-  Map eventInfo = {'title': '', 'start': '', 'room_id': '10'};
+  Map eventInfo = {
+    'title': '',
+    'start': '',
+    'color_key': '10',
+    'event_type': 'Evento',
+  };
   DateTime eventStart = DateTime.now();
   final DateFormat formatterDate = DateFormat.yMMMd('es_ES');
   final DateFormat formatterWeekDay = DateFormat.EEEE('es_ES');
@@ -29,7 +36,7 @@ class _EventScreenState extends State<EventScreen> {
   @override
   void initState() {
     super.initState();
-    futureEventInfo = eventModel.getReservatonInfo(widget.eventId, userId);
+    futureEventInfo = CalendarTools().getEventInfo(widget.eventId, userId);
     futureEventInfo.then((value) {
       eventInfo = value;
       eventStart = DateTime.parse(eventInfo['start']);
@@ -42,7 +49,7 @@ class _EventScreenState extends State<EventScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(title: Text('Reserva entrenamiento')),
+        appBar: AppBar(title: Text(eventInfo['event_type'])),
         body: setBody(section),
       ),
     );
@@ -50,7 +57,7 @@ class _EventScreenState extends State<EventScreen> {
 
   //Verifica si hay datos del evento, si no muestra indicador de cargue
   Widget setBody(String section) {
-    if (eventInfo['title'] == '') {
+    if (eventInfo['start'] == '') {
       return Center(child: CircularProgressIndicator());
     } else {
       if (section == 'cancelResult') {
@@ -73,7 +80,7 @@ class _EventScreenState extends State<EventScreen> {
                 margin: EdgeInsets.only(right: 12),
                 width: 6,
                 height: 24,
-                color: kBgColors['room_' + eventInfo['room_id']],
+                color: kBgColors['room_' + eventInfo['color_key']],
               ),
               Text(
                 eventInfo['title'],
@@ -127,13 +134,13 @@ class _EventScreenState extends State<EventScreen> {
       child: Text('Sí'),
       onPressed: () {
         Navigator.pop(context, 'Cancel');
-        cancelReservation();
+        cancelEvent(eventInfo['type_id']);
       },
     );
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("Cancelar reservación"),
-      content: Text("¿Confirma que desea cancelar esta reservación?"),
+      title: Text("Cancelar reserva"),
+      content: Text("¿Confirma que desea cancelar esta reserva?"),
       actions: [
         noButton,
         yesButton,
@@ -187,11 +194,32 @@ class _EventScreenState extends State<EventScreen> {
     );
   }
 
+  // Cancelar un evento, según el tipo ID
+  cancelEvent(eventTypeId) {
+    if (eventTypeId == '213') {
+      cancelReservation();
+    } else {
+      cancelAppointment();
+    }
+  }
+
+  // Cancelar reserva de entrenamiento
   cancelReservation() {
     futureCancel = eventModel.cancelReservation(
       eventInfo['id'],
       eventInfo['training_id'],
     );
+
+    futureCancel.then((response) {
+      resultCancel = response;
+      section = 'cancelResult';
+      setState(() {});
+    });
+  }
+
+  // Cancelar cita
+  cancelAppointment() {
+    futureCancel = CalendarTools().cancelAppointment(eventInfo['id'], userId);
 
     futureCancel.then((response) {
       resultCancel = response;

@@ -11,7 +11,7 @@ class EventModel {
 // Funciones
 //------------------------------------------------------------------------------
 
-  //Map con dia -> eventos CCE, para llenar Clear Calendar
+  /// Map con dia -> eventos CCE, para llenar Clear Calendar
   Future<Map<DateTime, List<CleanCalendarEvent>>> getEvents(userId) async {
     var url = kUrlApi + 'calendar/my_events/' + userId;
     print(url);
@@ -49,13 +49,18 @@ class EventModel {
     List<CleanCalendarEvent> _dayEvents = [];
 
     day['events'].forEach((event) {
+      String keyColor = event['type_id'];
+      if (event['type_id'] == '213') {
+        keyColor = event['related_2'];
+      }
+
       _dayEvents.add(
         CleanCalendarEvent(
           event['title'],
           startTime: DateTime.parse(event['start']),
-          description: 'Entrenamiento',
+          description: event['event_type'],
           endTime: DateTime.parse(event['end']),
-          color: kBgColors['room_' + event['related_2']],
+          color: kBgColors['room_' + keyColor],
           location: event['id'],
           isDone: true,
         ),

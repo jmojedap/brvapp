@@ -20,6 +20,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   String _emailValue;
   String _displayNameValue;
+  String _documentNumberValue;
   String _passwordValue;
   bool _acceptedTerms = false;
   bool _acceptedTermsValidator = true;
@@ -34,8 +35,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       body: Stack(
         children: [
           Container(
-            margin: EdgeInsets.only(top: 50),
-            height: 140,
+            margin: EdgeInsets.only(top: 36),
+            height: 120,
             child: Center(
               child: Image.asset('assets/img/logo-400.png'),
             ),
@@ -45,16 +46,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: Form(
                 key: _registerFormKey,
                 child: Card(
-                  elevation: 2,
+                  elevation: 5,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   margin: const EdgeInsets.only(
-                    left: 20,
-                    right: 20,
-                    top: 120,
-                    bottom: 20,
-                  ),
+                      left: 20, right: 20, top: 100, bottom: 20),
                   child: Padding(
                     padding: const EdgeInsets.all(24.0),
                     child: Column(
@@ -62,13 +59,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       children: <Widget>[
                         _displayNameField(),
                         _emailField(),
+                        _documentNumberField(),
                         _passwordField(),
-                        SizedBox(height: 12),
+                        SizedBox(height: 9),
                         _checkboxTermsTile(),
                         _linkTermsScreen(),
-                        SizedBox(height: 12),
+                        SizedBox(height: 9),
                         _submitButton(),
-                        SizedBox(height: 15),
+                        SizedBox(height: 9),
                         _bottomInfo(),
                       ],
                     ),
@@ -97,9 +95,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         }
         return null;
       },
-      decoration: InputDecoration(
-        labelText: 'Tu nombre',
-      ),
+      decoration: InputDecoration(labelText: 'Nombre completo'),
     );
   }
 
@@ -119,6 +115,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
       },
       decoration: InputDecoration(
         labelText: 'Correo electrónico',
+      ),
+    );
+  }
+
+  //Campo email
+  Widget _documentNumberField() {
+    return TextFormField(
+      initialValue: '',
+      keyboardType: TextInputType.number,
+      onSaved: (value) {
+        _documentNumberValue = value;
+      },
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Por favor complete esta casilla';
+        }
+        return null;
+      },
+      decoration: InputDecoration(
+        labelText: 'No. documento',
       ),
     );
   }
@@ -151,7 +167,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  //Subtitulo de casilla de aceptación de términos
+  /// Subtítulo de casilla de aceptación de términos
   Widget _checkboxTermsTileSubtitle() {
     if (_acceptedTermsValidator == false) {
       return Text(
@@ -211,7 +227,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 // Funciones
 //--------------------------------------------------------------------------
 
-  //Realizar la validación de register de usuario
+  /// Realizar la validación de register de usuario
   void _register(BuildContext context) {
     //Validar casillas del formulario
     setState(() {
@@ -227,6 +243,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       var formData = {
         'display_name': _displayNameValue,
         'email': _emailValue,
+        'document_number': _documentNumberValue,
         'new_password': _passwordValue,
       };
 
@@ -241,9 +258,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           if (signUpResponse['status'] == 1) {
             _loadSharedPreferences(signUpResponse['user_info']);
             Navigator.of(context).pushNamedAndRemoveUntil(
-              '/admin_info_posts_screen',
-              (route) => false,
-            );
+                '/admin_info_posts_screen', (route) => false);
           } else {
             _showInvalidSignUpDialog(signUpResponse['validation_data']);
           }
@@ -252,14 +267,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-  //Ir a la pantalla de login
+  /// Ir a la pantalla de login
   void _goToLogin(BuildContext context) {
     Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
   }
 
-  //Establecer datos de cuenta de usuario en SharedPreferences
+  /// Establecer datos de cuenta de usuario en SharedPreferences
   void _loadSharedPreferences(userInfo) async {
     await UserSimplePreferences.setUserId(userInfo['user_id']);
+    await UserSimplePreferences.setUserKey(userInfo['userkey']);
+    await UserSimplePreferences.setUserIK(
+        userInfo['user_id'], userInfo['userkey']);
     await UserSimplePreferences.setUserDisplayName(userInfo['display_name']);
     await UserSimplePreferences.setUsername(userInfo['username']);
     await UserSimplePreferences.setUserEmail(userInfo['email']);
@@ -286,7 +304,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String _errorText(validation) {
     //print(validation);
     if (validation['email_unique'] == 0) {
-      return 'Ya existe una cuenta con este correo electrónico.';
+      return 'Ya existe un usuario con este correo electrónico.';
+    }
+    if (validation['document_number_unique'] == 0) {
+      return 'Ya existe un usuario con este número de documento.';
     }
     return 'Ocurrió un error al crear la cuenta';
   }

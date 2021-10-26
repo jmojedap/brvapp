@@ -25,11 +25,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool loading = true;
   Future<Map> futureUserInfo;
   Map userInfo = {
-    'userId': '0',
-    'displayName': '',
-    'username': '',
-    'email': '',
-    'picture': kDefaultUserPicture,
+    'userId': UserSimplePreferences.getUserId(),
+    'displayName': UserSimplePreferences.getUserDisplayName(),
+    'email': UserSimplePreferences.getUserEmail(),
+    'picture': UserSimplePreferences.getUserPicture(),
     'expirationAt': ''
   };
 
@@ -46,20 +45,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   /* Cargar datos de usuario de SharedPreferences */
   void getUserInfo() async {
-    //Cargar variable userInfo
-    userInfo['userId'] = UserSimplePreferences.getUserId();
-    userInfo['email'] = UserSimplePreferences.getUserEmail();
-    userInfo['displayName'] = UserSimplePreferences.getUserDisplayName();
-    userInfo['picture'] = UserSimplePreferences.getUserPicture();
-
     futureUserInfo = userTools.getInfo(userInfo['userId'], 'general');
 
     futureUserInfo.then((mapResponse) {
       loading = false;
       Map mapUser = mapResponse['user'];
       userInfo['expirationAt'] = mapUser['expiration_at'];
+      print(userInfo['expirationAt'].length);
       if (userInfo['expirationAt'] != null) {
-        print(userInfo['expirtationAt']);
+        print('expirationAt:' + userInfo['expirationAt']);
         expirationAt = DateTime.parse(mapUser['expiration_at']);
       }
       setBodyContent(context);

@@ -78,7 +78,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _emailField() {
     return TextFormField(
       keyboardType: TextInputType.emailAddress,
-      //initialValue: 'linalop@pacarina.net',
       onSaved: (value) {
         _emailValue = value;
       },
@@ -194,6 +193,9 @@ class _LoginScreenState extends State<LoginScreen> {
   //Establecer datos de cuenta de usuario en SharedPreferences
   void _loadSharedPreferences(userInfo) async {
     await UserSimplePreferences.setUserId(userInfo['user_id']);
+    await UserSimplePreferences.setUserKey(userInfo['userkey']);
+    await UserSimplePreferences.setUserIK(
+        userInfo['user_id'], userInfo['userkey']);
     await UserSimplePreferences.setUserDisplayName(userInfo['display_name']);
     await UserSimplePreferences.setUsername(userInfo['username']);
     await UserSimplePreferences.setUserEmail(userInfo['email']);
