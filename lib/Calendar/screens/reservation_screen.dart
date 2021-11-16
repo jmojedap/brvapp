@@ -1,6 +1,5 @@
 import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:brave_app/Common/screens/bottom_bar_component.dart';
 import 'package:brave_app/Config/constants.dart';
 import 'dart:async';
 import 'package:brave_app/Calendar/models/reservation_tools.dart';
@@ -100,7 +99,6 @@ class _ReservationScreenState extends State<ReservationScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomBarComponent(0),
     );
   }
 
@@ -145,6 +143,35 @@ class _ReservationScreenState extends State<ReservationScreen> {
     return stepConfirm();
   }
 
+  /// Mensaje si no hay días con entrenamientos programados
+  /// 2021-11-10
+  Widget messageNoEvents() {
+    return Container(
+      padding: EdgeInsets.all(12),
+      child: Column(
+        children: [
+          Icon(
+            Icons.info_outline,
+            size: 48,
+            color: Colors.blue,
+          ),
+          SizedBox(height: 12),
+          Text(
+            'No hay entrenamientos programados para los próximos días.',
+            style: TextStyle(fontSize: 18),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 12),
+          Text(
+            'Por favor consulta más tarde nuevamente.',
+            style: TextStyle(fontSize: 15),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
 // Paso 1: Selección de día
 //--------------------------------------------------------------------------
 
@@ -154,7 +181,11 @@ class _ReservationScreenState extends State<ReservationScreen> {
       future: _trainingDays,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
-          return ListView(children: _daysWidgetList(snapshot.data));
+          if (snapshot.data.length > 0) {
+            return ListView(children: _daysWidgetList(snapshot.data));
+          } else {
+            return messageNoEvents();
+          }
         } else if (snapshot.hasError) {
           return Text("${snapshot.error}");
         }

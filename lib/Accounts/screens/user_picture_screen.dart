@@ -28,8 +28,8 @@ class _UserPictureScreenState extends State<UserPictureScreen> {
     );
   }
 
-  //Seleccionar imagen de archivo o cámara, con ImagePicker
-  //Y recortarla con ImageCropper
+  /// Seleccionar imagen de archivo o cámara, con ImagePicker
+  /// Y recortarla con ImageCropper
   Future _pickImage(ImageSource source) async {
     setState(() => loading = true);
     XFile pickedImage = await picker.pickImage(source: source);
@@ -68,7 +68,7 @@ class _UserPictureScreenState extends State<UserPictureScreen> {
     }
   }
 
-  //Body content cuando hay imagen seleccionada
+  /// Body content cuando hay imagen seleccionada
   Widget contentImage() {
     return Container(
       padding: EdgeInsets.all(12),
@@ -112,7 +112,7 @@ class _UserPictureScreenState extends State<UserPictureScreen> {
     );
   }
 
-  //Body content cuando no hay imagen seleccionada
+  /// Body content cuando no hay imagen seleccionada
   Widget contentNoImage() {
     return Container(
       padding: EdgeInsets.all(12),
@@ -165,7 +165,7 @@ class _UserPictureScreenState extends State<UserPictureScreen> {
     );
   }
 
-  //Ejecuta el cargue de la imagen al servidor
+  /// Ejecuta el cargue de la imagen al servidor
   void uploadPicture() {
     setState(() => loading = true);
     _futureUploadPicture = AccountModel().setPicture(_imageFile.path);

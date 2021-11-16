@@ -43,21 +43,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     getUserInfo();
   }
 
-  /* Cargar datos de usuario de SharedPreferences */
+  /// Cargar los datos desde API
+  /// 2021-11-11
   void getUserInfo() async {
     futureUserInfo = userTools.getInfo(userInfo['userId'], 'general');
 
     futureUserInfo.then((mapResponse) {
       loading = false;
+      setState(() {});
       Map mapUser = mapResponse['user'];
       userInfo['expirationAt'] = mapUser['expiration_at'];
-      print(userInfo['expirationAt'].length);
       if (userInfo['expirationAt'] != null) {
         print('expirationAt:' + userInfo['expirationAt']);
         expirationAt = DateTime.parse(mapUser['expiration_at']);
       }
       setBodyContent(context);
-      setState(() {});
     });
   }
 
@@ -136,12 +136,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return Column(
         children: [
           Icon(
-            Icons.info,
+            Icons.info_outline,
             color: Colors.blue,
             size: 48,
           ),
           SizedBox(height: 12),
-          Text('No tienes una suscripción activa'),
+          Text(
+            'No tienes una suscripción activa',
+            style: TextStyle(fontSize: 18),
+            textAlign: TextAlign.center,
+          ),
           SizedBox(height: 12),
           Text('Contacta a tu asesor comercial'),
         ],

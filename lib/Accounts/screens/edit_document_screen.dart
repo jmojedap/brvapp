@@ -20,10 +20,9 @@ class _EditDocumentScreenState extends State<EditDocumentScreen> {
   String userKey = UserSimplePreferences.getUserKey();
   Future<Map> futureUserInfo;
   Map userInfo = {'document_number': '', 'document_type': '1'};
-  //var _selectedValue;
 
   Future<Map> _updateResponse;
-  bool loading = false;
+  bool loading = true;
 
   TextEditingController _documentNumberController;
 
@@ -57,34 +56,42 @@ class _EditDocumentScreenState extends State<EditDocumentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffKey,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.all(12),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _buttonsTop(context),
-                SizedBox(height: 16),
-                Form(
-                  key: _updateProfileFormKey,
-                  child: Column(
-                    children: [
-                      _documentNumberField(),
-                      SizedBox(height: 24),
-                      _documentTypes(),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+    return SafeArea(
+      child: Scaffold(
+        key: _scaffKey,
+        body: bodyContent(),
       ),
     );
+  }
+
+  Widget bodyContent() {
+    if (loading) {
+      return Center(child: CircularProgressIndicator());
+    } else {
+      return SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buttonsTop(context),
+              SizedBox(height: 16),
+              Form(
+                key: _updateProfileFormKey,
+                child: Column(
+                  children: [
+                    _documentNumberField(),
+                    SizedBox(height: 24),
+                    _documentTypes(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
   }
 
 // Widgets

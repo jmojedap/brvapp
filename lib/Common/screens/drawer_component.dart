@@ -30,10 +30,11 @@ class _DrawerComponentState extends State<DrawerComponent> {
             ),
           ),
           ListTile(
-            title: Text('Desempeño'),
+            title: Text('InBody'),
             leading: Icon(Icons.run_circle_outlined),
-            onTap: () => {
-              Navigator.of(context).pushNamed('/inbody'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.of(context).pushNamed('/inbody');
             },
           ),
           ListTile(

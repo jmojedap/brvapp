@@ -1,6 +1,5 @@
 import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:brave_app/Common/screens/bottom_bar_component.dart';
 import 'package:brave_app/Config/constants.dart';
 import 'dart:async';
 import 'package:brave_app/Calendar/models/calendar_tools.dart';
@@ -76,6 +75,7 @@ class _ReservateAppointmentScreenState
                   subtitle: Text('Día'),
                   onTap: () => _setStep(2),
                   selected: _step == 2,
+                  enabled: _step >= 2,
                 ),
                 ListTile(
                   leading: Icon(Icons.watch_later_outlined),
@@ -104,7 +104,6 @@ class _ReservateAppointmentScreenState
           ],
         ),
       ),
-      bottomNavigationBar: BottomBarComponent(0),
     );
   }
 
@@ -200,6 +199,35 @@ class _ReservateAppointmentScreenState
 // Paso 2: Selección de día
 //--------------------------------------------------------------------------
 
+  /// Mensaje si no hay días con citas programadas
+  /// 2021-11-10
+  Widget messageNoEvents() {
+    return Container(
+      padding: EdgeInsets.all(12),
+      child: Column(
+        children: [
+          Icon(
+            Icons.info_outline,
+            size: 48,
+            color: Colors.blue,
+          ),
+          SizedBox(height: 12),
+          Text(
+            'No hay citas programadas para los próximos días.',
+            style: TextStyle(fontSize: 18),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 12),
+          Text(
+            'Por favor consulta más tarde nuevamente.',
+            style: TextStyle(fontSize: 15),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
   void _setDays() {
     _setStep(99); //Loading indicator
     _appointmentDays =
@@ -216,7 +244,11 @@ class _ReservateAppointmentScreenState
       future: _appointmentDays,
       builder: (BuildContext context, AsyncSnapshot snapshotDays) {
         if (snapshotDays.hasData) {
-          return ListView(children: _daysWidgetList(snapshotDays.data));
+          if (snapshotDays.data.length > 0) {
+            return ListView(children: _daysWidgetList(snapshotDays.data));
+          } else {
+            return messageNoEvents();
+          }
         } else if (snapshotDays.hasError) {
           return Text("${snapshotDays.error}");
         }
@@ -286,6 +318,8 @@ class _ReservateAppointmentScreenState
       itemBuilder: (BuildContext context, int index) {
         Icon _icono = Icon(Icons.radio_button_off);
         if (index == _keyAppointment) _icono = Icon(Icons.radio_button_checked);
+        String titleSubtitle = 'No disponible';
+        if (_appointments[index]['active'] == 1) titleSubtitle = '';
         // Hora de inicio
         DateTime _appointmentStart =
             DateTime.parse(_appointments[index]['start']);
@@ -298,6 +332,7 @@ class _ReservateAppointmentScreenState
           child: ListTile(
             leading: _icono,
             title: Text(_appointmentHourStart),
+            subtitle: Text(titleSubtitle),
             enabled: _appointments[index]['active'] == 1,
             selected: index == _keyAppointment,
             onTap: () {
@@ -397,7 +432,11 @@ class _ReservateAppointmentScreenState
           SizedBox(height: 15),
           Text('La reserva no se guardó', style: TextStyle(fontSize: 15)),
           SizedBox(height: 15),
-          Text(saveReservationError, style: TextStyle(fontSize: 18)),
+          Text(
+            saveReservationError,
+            style: TextStyle(fontSize: 18),
+            textAlign: TextAlign.center,
+          ),
           SizedBox(height: 15),
           ElevatedButton(
             onPressed: () {

@@ -89,6 +89,7 @@ class MyApp extends StatelessWidget {
     Future _futureUserKey = UserTools().getUserKey(_userId);
 
     _futureUserKey.then((mapResponse) {
+      print('userId:' + _userId);
       print('userkey:' + mapResponse['userkey']);
       UserSimplePreferences.setUserKey(mapResponse['userkey']);
       UserSimplePreferences.setUserIK(_userId, mapResponse['userkey']);

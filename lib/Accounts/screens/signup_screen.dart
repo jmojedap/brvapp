@@ -32,50 +32,37 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            margin: EdgeInsets.only(top: 36),
-            height: 120,
-            child: Center(
-              child: Image.asset('assets/img/logo-400.png'),
+      body: SingleChildScrollView(
+        child: Form(
+          key: _registerFormKey,
+          child: Card(
+            elevation: 5,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
-          ),
-          Center(
-            child: SingleChildScrollView(
-              child: Form(
-                key: _registerFormKey,
-                child: Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  margin: const EdgeInsets.only(
-                      left: 20, right: 20, top: 100, bottom: 20),
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        _displayNameField(),
-                        _emailField(),
-                        _documentNumberField(),
-                        _passwordField(),
-                        SizedBox(height: 9),
-                        _checkboxTermsTile(),
-                        _linkTermsScreen(),
-                        SizedBox(height: 9),
-                        _submitButton(),
-                        SizedBox(height: 9),
-                        _bottomInfo(),
-                      ],
-                    ),
-                  ),
-                ),
+            margin: const EdgeInsets.only(
+                left: 20, right: 20, top: 100, bottom: 20),
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  _displayNameField(),
+                  _emailField(),
+                  _documentNumberField(),
+                  _passwordField(),
+                  SizedBox(height: 9),
+                  _checkboxTermsTile(),
+                  _linkTermsScreen(),
+                  SizedBox(height: 9),
+                  _submitButton(),
+                  SizedBox(height: 9),
+                  _bottomInfo(),
+                ],
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -86,6 +73,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget _displayNameField() {
     return TextFormField(
       initialValue: '',
+      //initialValue: 'Tester Pacarina',
       onSaved: (value) {
         _displayNameValue = value;
       },
@@ -103,6 +91,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget _emailField() {
     return TextFormField(
       initialValue: '',
+      //initialValue: 'tester@pacarina.net',
       keyboardType: TextInputType.emailAddress,
       onSaved: (value) {
         _emailValue = value;
@@ -123,6 +112,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget _documentNumberField() {
     return TextFormField(
       initialValue: '',
+      //initialValue: '16073346',
       keyboardType: TextInputType.number,
       onSaved: (value) {
         _documentNumberValue = value;
@@ -143,6 +133,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget _passwordField() {
     return TextFormField(
       initialValue: '',
+      //initialValue: 'brave2021',
       onSaved: (value) {
         _passwordValue = value;
       },
@@ -202,9 +193,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (_loading) CircularProgressIndicator(color: Colors.green[50]),
+          if (_loading) _loadingIndicator(),
           Text('Crear cuenta'),
         ],
+      ),
+    );
+  }
+
+  //Indica proceso de cargue cuando se está validando datos de login
+  Widget _loadingIndicator() {
+    return Container(
+      height: 15,
+      width: 15,
+      margin: EdgeInsets.only(right: 10),
+      child: CircularProgressIndicator(
+        color: Colors.white,
       ),
     );
   }
