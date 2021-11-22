@@ -7,7 +7,6 @@ import 'package:brave_app/User/models/user_tools.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
-//import 'package:brave_app/Accounts/screens/user_picture_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   //const ProfileScreen({Key key}) : super(key: key);
@@ -32,7 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     'expirationAt': ''
   };
 
-  DateTime expirationAt;
+  DateTime expirationAt = DateTime.now();
 
 // Building
 //------------------------------------------------------------------------------
