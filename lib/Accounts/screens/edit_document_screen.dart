@@ -1,55 +1,53 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:form_field_validator/form_field_validator.dart';
-import 'package:brave_app/Config/validation.dart';
 import 'package:brave_app/Accounts/models/account_model.dart';
+import 'package:brave_app/User/models/user_tools.dart';
 import 'package:brave_app/Config/constants.dart';
 import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
 
-class EditProfileScreen extends StatefulWidget {
+class EditDocumentScreen extends StatefulWidget {
   //const ProfileScreen({Key key}) : super(key: key);
 
   @override
-  _EditProfileScreenState createState() => _EditProfileScreenState();
+  _EditDocumentScreenState createState() => _EditDocumentScreenState();
 }
 
-class _EditProfileScreenState extends State<EditProfileScreen> {
+class _EditDocumentScreenState extends State<EditDocumentScreen> {
 // Variables
 //--------------------------------------------------------------------------
 
-  Future<Map> _updateResponse;
-  bool loading = false;
+  String userId = UserSimplePreferences.getUserId();
+  String userKey = UserSimplePreferences.getUserKey();
+  Future<Map> futureUserInfo;
+  Map userInfo = {'document_number': '', 'document_type': '1'};
 
-  TextEditingController _displayNameController;
-  TextEditingController _usernameController;
-  TextEditingController _emailController;
+  Future<Map> _updateResponse;
+  bool loading = true;
+
+  TextEditingController _documentNumberController;
 
   final _updateProfileFormKey = GlobalKey<FormState>();
   final _scaffKey = GlobalKey<ScaffoldState>();
 
 // Obtener datos de usuario por SharedPreferences
 //--------------------------------------------------------------------------
-  Map<String, String> userInfo = {
-    'userId': UserSimplePreferences.getUserId(),
-    'displayName': UserSimplePreferences.getUserDisplayName(),
-    'username': UserSimplePreferences.getUsername(),
-    'email': UserSimplePreferences.getUserEmail(),
-  };
-
   @override
   void initState() {
     super.initState();
-    _loadProfileData();
+    getUserInfo();
   }
 
   /* Cargar datos de usuario de SharedPreferences */
-  void _loadProfileData() async {
-    setState(() {
-      //Establecer valores en controladores
-      _displayNameController =
-          TextEditingController(text: userInfo['displayName']);
-      _usernameController = TextEditingController(text: userInfo['username']);
-      _emailController = TextEditingController(text: userInfo['email']);
+  void getUserInfo() async {
+    futureUserInfo = UserTools().getInfo(userId, 'general');
+
+    futureUserInfo.then((mapResponse) {
+      loading = false;
+      userInfo = mapResponse['user'];
+      setState(() {
+        _documentNumberController =
+            TextEditingController(text: userInfo['document_number']);
+      });
     });
   }
 
@@ -58,36 +56,42 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffKey,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.all(12),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _buttonsTop(context),
-                SizedBox(height: 16),
-                Form(
-                  key: _updateProfileFormKey,
-                  child: Column(
-                    children: [
-                      _displayNameField(),
-                      SizedBox(height: 15),
-                      _userNameField(),
-                      SizedBox(height: 15),
-                      _emailField(),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+    return SafeArea(
+      child: Scaffold(
+        key: _scaffKey,
+        body: bodyContent(),
       ),
     );
+  }
+
+  Widget bodyContent() {
+    if (loading) {
+      return Center(child: CircularProgressIndicator());
+    } else {
+      return SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buttonsTop(context),
+              SizedBox(height: 16),
+              Form(
+                key: _updateProfileFormKey,
+                child: Column(
+                  children: [
+                    _documentNumberField(),
+                    SizedBox(height: 24),
+                    _documentTypes(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
   }
 
 // Widgets
@@ -116,11 +120,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _displayNameField() {
+  Widget _documentNumberField() {
     return TextFormField(
-      controller: _displayNameController,
+      controller: _documentNumberController,
       decoration: InputDecoration(
-        labelText: 'Nombre',
+        labelText: 'Número documento',
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -131,24 +135,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _userNameField() {
-    return TextFormField(
-      controller: _usernameController,
+  Widget _documentTypes() {
+    return DropdownButtonFormField(
+      value: userInfo['document_type'],
       decoration: InputDecoration(
-        labelText: 'Nombre de usuario',
+        labelText: 'Tipo',
       ),
-      validator:
-          RequiredValidator(errorText: 'Por favor complete esta casilla'),
-    );
-  }
-
-  Widget _emailField() {
-    return TextFormField(
-      controller: _emailController,
-      decoration: InputDecoration(
-        labelText: 'Correo electrónico',
-      ),
-      validator: kRequiredEmailValidator,
+      items: [
+        DropdownMenuItem(
+          child: Text('Cédula de ciudadanía'),
+          value: '1',
+        ),
+        DropdownMenuItem(
+          child: Text('Cédula extranjería'),
+          value: '3',
+        ),
+        DropdownMenuItem(
+          child: Text('Pasaporte'),
+          value: '4',
+        ),
+        DropdownMenuItem(
+          child: Text('Tarjeta de identidad'),
+          value: '5',
+        ),
+      ],
+      onChanged: (value) {
+        userInfo['document_type'] = value;
+        print('document_type: ' + userInfo['document_type']);
+      },
     );
   }
 
@@ -165,11 +179,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       //Enviar formulario
       _updateResponse = AccountModel().updateProfile(
-        userInfo['userId'],
+        userId,
         {
-          'display_name': _displayNameController.text,
-          'username': _usernameController.text,
-          'email': _emailController.text,
+          'document_number': _documentNumberController.text,
+          'document_type': userInfo['document_type'],
         },
       );
 
@@ -179,7 +192,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           setState(() => loading = false);
 
           if (updateData['status'] == 1) {
-            _updateSharedPreferences();
             _showSuccessSnackBar(context);
             Navigator.of(context).pop();
           } else {
@@ -189,13 +201,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         },
       );
     }
-  }
-
-  //Actualizar datos de cuenta de usuario en SharedPreferences
-  void _updateSharedPreferences() async {
-    UserSimplePreferences.setUserDisplayName(_displayNameController.text);
-    UserSimplePreferences.setUserEmail(_emailController.text);
-    UserSimplePreferences.setUsername(_usernameController.text);
   }
 
   //Mostrar diálogo con error de validación

@@ -34,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Container(
                 width: 180,
                 alignment: Alignment.center,
-                padding: const EdgeInsets.only(top: 80, bottom: 40),
+                padding: const EdgeInsets.only(top: 36, bottom: 18),
                 child: Image.asset('assets/img/logo-400.png'),
               ),
               Container(
@@ -43,22 +43,21 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Card(
                     elevation: 2,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    margin: const EdgeInsets.all(20),
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            _emailField(),
-                            _passwordField(),
-                            SizedBox(height: 20),
-                            _submitButton(),
-                            SizedBox(height: 20),
-                            _bottomInfo(),
-                          ],
-                        ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    margin: const EdgeInsets.all(18),
+                    child: Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          _emailField(),
+                          _passwordField(),
+                          SizedBox(height: 20),
+                          _submitButton(),
+                          SizedBox(height: 20),
+                          _bottomInfo(),
+                        ],
                       ),
                     ),
                   ),
@@ -78,7 +77,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _emailField() {
     return TextFormField(
       keyboardType: TextInputType.emailAddress,
-      //initialValue: 'linalop@pacarina.net',
       onSaved: (value) {
         _emailValue = value;
       },
@@ -194,6 +192,9 @@ class _LoginScreenState extends State<LoginScreen> {
   //Establecer datos de cuenta de usuario en SharedPreferences
   void _loadSharedPreferences(userInfo) async {
     await UserSimplePreferences.setUserId(userInfo['user_id']);
+    await UserSimplePreferences.setUserKey(userInfo['userkey']);
+    await UserSimplePreferences.setUserIK(
+        userInfo['user_id'], userInfo['userkey']);
     await UserSimplePreferences.setUserDisplayName(userInfo['display_name']);
     await UserSimplePreferences.setUsername(userInfo['username']);
     await UserSimplePreferences.setUserEmail(userInfo['email']);

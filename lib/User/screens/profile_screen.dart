@@ -7,7 +7,6 @@ import 'package:brave_app/User/models/user_tools.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
-//import 'package:brave_app/Accounts/screens/user_picture_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   //const ProfileScreen({Key key}) : super(key: key);
@@ -25,15 +24,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool loading = true;
   Future<Map> futureUserInfo;
   Map userInfo = {
-    'userId': '0',
-    'displayName': '',
-    'username': '',
-    'email': '',
-    'picture': kDefaultUserPicture,
+    'userId': UserSimplePreferences.getUserId(),
+    'displayName': UserSimplePreferences.getUserDisplayName(),
+    'email': UserSimplePreferences.getUserEmail(),
+    'picture': UserSimplePreferences.getUserPicture(),
     'expirationAt': ''
   };
 
-  DateTime expirationAt;
+  DateTime expirationAt = DateTime.now();
 
 // Building
 //------------------------------------------------------------------------------
@@ -44,26 +42,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     getUserInfo();
   }
 
-  /* Cargar datos de usuario de SharedPreferences */
+  /// Cargar los datos desde API
+  /// 2021-11-11
   void getUserInfo() async {
-    //Cargar variable userInfo
-    userInfo['userId'] = UserSimplePreferences.getUserId();
-    userInfo['email'] = UserSimplePreferences.getUserEmail();
-    userInfo['displayName'] = UserSimplePreferences.getUserDisplayName();
-    userInfo['picture'] = UserSimplePreferences.getUserPicture();
-
     futureUserInfo = userTools.getInfo(userInfo['userId'], 'general');
 
     futureUserInfo.then((mapResponse) {
       loading = false;
+      setState(() {});
       Map mapUser = mapResponse['user'];
       userInfo['expirationAt'] = mapUser['expiration_at'];
       if (userInfo['expirationAt'] != null) {
-        print(userInfo['expirtationAt']);
+        print('expirationAt:' + userInfo['expirationAt']);
         expirationAt = DateTime.parse(mapUser['expiration_at']);
       }
       setBodyContent(context);
-      setState(() {});
     });
   }
 
@@ -142,12 +135,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return Column(
         children: [
           Icon(
-            Icons.info,
+            Icons.info_outline,
             color: Colors.blue,
             size: 48,
           ),
           SizedBox(height: 12),
-          Text('No tienes una suscripción activa'),
+          Text(
+            'No tienes una suscripción activa',
+            style: TextStyle(fontSize: 18),
+            textAlign: TextAlign.center,
+          ),
           SizedBox(height: 12),
           Text('Contacta a tu asesor comercial'),
         ],

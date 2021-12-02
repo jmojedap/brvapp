@@ -12,6 +12,7 @@ class UserSimplePreferences {
   static const _keyUsername = 'username';
   static const _keyUserEmail = 'userEmail';
   static const _keyUserPicture = 'userPicture';
+  static const _keyUserIK = 'userIK';
 
   static Future init() async {
     _preferences = await SharedPreferences.getInstance();
@@ -24,6 +25,9 @@ class UserSimplePreferences {
 
   static Future setUserKey(String userKey) async =>
       await _preferences.setString(_keyUserKey, userKey);
+
+  static Future setUserIK(String userId, String userKey) async =>
+      await _preferences.setString(_keyUserIK, userId + '-' + userKey);
 
   static Future setUserDisplayName(String userDisplayName) async =>
       await _preferences.setString(_keyUserDisplayName, userDisplayName);
@@ -54,4 +58,8 @@ class UserSimplePreferences {
   static String getUserEmail() => _preferences.getString(_keyUserEmail) ?? 'ND';
   static String getUserPicture() =>
       _preferences.getString(_keyUserPicture) ?? kDefaultUserPicture;
+  static String getAppendAuth() {
+    String appendAuth = '&ik=' + _preferences.getString(_keyUserIK);
+    return appendAuth;
+  }
 }

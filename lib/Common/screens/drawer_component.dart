@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:brave_app/Config/constants.dart';
+import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
 
 class DrawerComponent extends StatefulWidget {
   //const DrawerComponent({Key? key}) : super(key: key);
@@ -11,28 +11,10 @@ class DrawerComponent extends StatefulWidget {
 
 class _DrawerComponentState extends State<DrawerComponent> {
   Map<String, String> _userInfo = {
-    'userId': '',
-    'displayName': '',
-    'email': '',
-    'picture': kDefaultUserPicture,
+    'displayName': UserSimplePreferences.getUserDisplayName(),
+    'email': UserSimplePreferences.getUserEmail(),
+    'picture': UserSimplePreferences.getUserPicture(),
   };
-
-  @override
-  void initState() {
-    super.initState();
-    _loadProfileData();
-  }
-
-  /* Cargar datos de usuario de SharedPreferences */
-  void _loadProfileData() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _userInfo['displayName'] = (prefs.getString('userDisplayName') ?? '');
-      _userInfo['email'] = (prefs.getString('userEmail') ?? '');
-      _userInfo['picture'] =
-          (prefs.getString('userPicture') ?? kDefaultUserPicture);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,26 +30,21 @@ class _DrawerComponentState extends State<DrawerComponent> {
             ),
           ),
           ListTile(
-            title: Text('Contraseña'),
-            leading: Icon(Icons.vpn_key),
-            onTap: () => {
-              Navigator.of(context).pushNamed('/password'),
+            title: Text('InBody'),
+            leading: Icon(Icons.run_circle_outlined),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.of(context).pushNamed('/inbody');
             },
           ),
           ListTile(
-            title: Text('Desempeño'),
-            leading: Icon(Icons.vpn_key),
-            onTap: () => {
-              Navigator.of(context).pushNamed('/performance'),
+            title: Text('Acerca de Brave App'),
+            leading: Icon(Icons.info_outline),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.of(context).pushNamed('/about');
             },
           ),
-          /*ListTile(
-            title: Text('Calendario'),
-            leading: Icon(Icons.calendar_today),
-            onTap: () => {
-              Navigator.of(context).pushNamed('/calendar_screen'),
-            },
-          ),*/
           ListTile(
             title: Text('Salir'),
             leading: Icon(Icons.logout),
@@ -83,10 +60,8 @@ class _DrawerComponentState extends State<DrawerComponent> {
     Navigator.pop(context);
   }*/
 
-  /*
-  Limpiar datos de usuario de SharedPreferences e ir a inicio
-  2021-07-13 
-  */
+  /// Limpiar datos de usuario de SharedPreferences e ir a inicio
+  /// 2021-07-13
   void _clearSharedPreferences(BuildContext context) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     await preferences.clear();

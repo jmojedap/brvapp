@@ -1,5 +1,6 @@
 import 'package:brave_app/Accounts/models/user_simple_preferences.dart';
 import 'package:brave_app/Config/constants.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_clean_calendar/flutter_clean_calendar.dart';
 import 'package:flutter_clean_calendar/clean_calendar_event.dart';
@@ -49,7 +50,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
         icon: Icon(Icons.add, color: Colors.white),
         label: Text('Reserva', style: TextStyle(color: Colors.white)),
         onPressed: () {
-          Navigator.of(context).pushNamed('/health_survey_screen');
+          //Navigator.of(context).pushNamed('/health_survey_screen');
+          showCupertinoDialog(context: context, builder: builderActionSheet);
         },
         backgroundColor: kBgColors['appSecondary'],
       ),
@@ -92,6 +94,31 @@ class _CalendarScreenState extends State<CalendarScreen> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => EventScreen(_eventId),
+      ),
+    );
+  }
+
+  Widget builderActionSheet(BuildContext context) {
+    return CupertinoActionSheet(
+      title: Text('Tipo de reserva'),
+      actions: [
+        CupertinoActionSheetAction(
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.of(context).pushNamed('/health_survey_screen');
+          },
+          child: Text('Entrenamiento'),
+        ),
+        CupertinoActionSheetAction(
+          onPressed: () {
+            Navigator.of(context).pushNamed('/reservate_appointment');
+          },
+          child: Text('Citas'),
+        ),
+      ],
+      cancelButton: CupertinoActionSheetAction(
+        onPressed: () => Navigator.pop(context),
+        child: Text('Cancelar'),
       ),
     );
   }

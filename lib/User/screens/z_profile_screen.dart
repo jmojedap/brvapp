@@ -4,7 +4,6 @@ import 'package:brave_app/Config/constants.dart';
 import 'package:brave_app/Common/screens/bottom_bar_component.dart';
 import 'package:brave_app/Common/screens/drawer_component.dart';
 import 'package:dio/dio.dart';
-import 'dart:convert';
 
 class ProfileScreen extends StatefulWidget {
   //const ProfileScreen({Key key}) : super(key: key);

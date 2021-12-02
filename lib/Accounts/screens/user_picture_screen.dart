@@ -14,13 +14,11 @@ class UserPictureScreen extends StatefulWidget {
 }
 
 class _UserPictureScreenState extends State<UserPictureScreen> {
-  final _userId = UserSimplePreferences.getUserId();
-  final _userKey = UserSimplePreferences.getUserKey();
   final _userPicture = UserSimplePreferences.getUserPicture();
   File _imageFile;
   final picker = ImagePicker();
   Future<Map> _futureUploadPicture;
-  bool _loading = false;
+  bool loading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +28,10 @@ class _UserPictureScreenState extends State<UserPictureScreen> {
     );
   }
 
-  //Seleccionar imagen de archivo o cámara, con ImagePicker
-  //Y recortarla con ImageCropper
+  /// Seleccionar imagen de archivo o cámara, con ImagePicker
+  /// Y recortarla con ImageCropper
   Future _pickImage(ImageSource source) async {
-    setState(() => _loading = true);
+    setState(() => loading = true);
     XFile pickedImage = await picker.pickImage(source: source);
 
     if (pickedImage != null) {
@@ -53,14 +51,14 @@ class _UserPictureScreenState extends State<UserPictureScreen> {
       );
 
       _imageFile = cropped;
-      setState(() => _loading = false);
+      setState(() => loading = false);
     }
   }
 
   //Contenido de body, Scaffold
   Widget bodyContent() {
-    if (_loading) {
-      return _loadingWidget();
+    if (loading) {
+      return loadingWidget();
     } else {
       if (_imageFile != null) {
         return contentImage();
@@ -70,7 +68,7 @@ class _UserPictureScreenState extends State<UserPictureScreen> {
     }
   }
 
-  //Body content cuando hay imagen seleccionada
+  /// Body content cuando hay imagen seleccionada
   Widget contentImage() {
     return Container(
       padding: EdgeInsets.all(12),
@@ -106,7 +104,6 @@ class _UserPictureScreenState extends State<UserPictureScreen> {
             color: kBgColors['appDark'],
           ),
           onPressed: () {
-            print('Enviando botón');
             uploadPicture();
           },
           iconSize: 42,
@@ -115,7 +112,7 @@ class _UserPictureScreenState extends State<UserPictureScreen> {
     );
   }
 
-  //Body content cuando no hay imagen seleccionada
+  /// Body content cuando no hay imagen seleccionada
   Widget contentNoImage() {
     return Container(
       padding: EdgeInsets.all(12),
@@ -158,7 +155,7 @@ class _UserPictureScreenState extends State<UserPictureScreen> {
   }
 
   //Contenido de cargue mientras se selecciona y recorta la foto
-  Widget _loadingWidget() {
+  Widget loadingWidget() {
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -168,19 +165,16 @@ class _UserPictureScreenState extends State<UserPictureScreen> {
     );
   }
 
-  //Ejecuta el cargue de la imagen al servidor
+  /// Ejecuta el cargue de la imagen al servidor
   void uploadPicture() {
-    setState(() => _loading = true);
-    _futureUploadPicture =
-        AccountModel().setPicture(_userId, _userKey, _imageFile.path);
+    setState(() => loading = true);
+    _futureUploadPicture = AccountModel().setPicture(_imageFile.path);
 
     _futureUploadPicture.then(
       (mapResponse) {
-        setState(() => _loading = false);
+        setState(() => loading = false);
 
         if (mapResponse['status'] == 1) {
-          print('URL nueva imagen:');
-          print(mapResponse['url_image']);
           UserSimplePreferences.setUserPicture(mapResponse['url_image']);
           Navigator.of(context)
               .pushNamedAndRemoveUntil('/profile', (route) => false);
