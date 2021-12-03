@@ -30,11 +30,13 @@ class _UserPictureScreenState extends State<UserPictureScreen> {
 
   /// Seleccionar imagen de archivo o cámara, con ImagePicker
   /// Y recortarla con ImageCropper
+  /// 2021-12-03
   Future _pickImage(ImageSource source) async {
     setState(() => loading = true);
     XFile pickedImage = await picker.pickImage(source: source);
 
     if (pickedImage != null) {
+      print('SELECCIONANDO IMAGEN');
       File cropped = await ImageCropper.cropImage(
         sourcePath: pickedImage.path,
         aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
@@ -51,8 +53,8 @@ class _UserPictureScreenState extends State<UserPictureScreen> {
       );
 
       _imageFile = cropped;
-      setState(() => loading = false);
     }
+    setState(() => loading = false);
   }
 
   //Contenido de body, Scaffold
@@ -84,8 +86,8 @@ class _UserPictureScreenState extends State<UserPictureScreen> {
     );
   }
 
-  //Botones para parte superior cuando ya hay imagen elegida y recortada
-  //Aceptar o cancelar.
+  /// Botones para parte superior cuando ya hay imagen elegida y recortada
+  /// Aceptar o cancelar.
   Widget _buttonsTop() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -113,55 +115,55 @@ class _UserPictureScreenState extends State<UserPictureScreen> {
   }
 
   /// Body content cuando no hay imagen seleccionada
+  /// Imagen actual y botones para elegir origen de nueva foto
+  /// 2021-12-03
   Widget contentNoImage() {
     return Container(
       padding: EdgeInsets.all(12),
       child: Center(
-        child: Column(children: [
-          CircleAvatar(
-            radius: 120,
-            backgroundImage: NetworkImage(_userPicture),
-          ),
-          SizedBox(height: 15),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: () => _pickImage(ImageSource.camera),
-                child: Row(
-                  children: [
-                    Icon(Icons.camera_alt),
-                    SizedBox(width: 6),
-                    Text('Cámara'),
-                  ],
+        child: Column(
+          children: [
+            CircleAvatar(
+              radius: 120,
+              backgroundImage: NetworkImage(_userPicture),
+            ),
+            SizedBox(height: 15),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () => _pickImage(ImageSource.camera),
+                  child: Row(
+                    children: [
+                      Icon(Icons.camera_alt),
+                      SizedBox(width: 6),
+                      Text('Cámara'),
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(width: 15),
-              ElevatedButton(
-                onPressed: () => _pickImage(ImageSource.gallery),
-                child: Row(
-                  children: [
-                    Icon(Icons.folder_outlined),
-                    SizedBox(width: 6),
-                    Text('Galería'),
-                  ],
+                SizedBox(width: 15),
+                ElevatedButton(
+                  onPressed: () => _pickImage(ImageSource.gallery),
+                  child: Row(
+                    children: [
+                      Icon(Icons.folder_outlined),
+                      SizedBox(width: 6),
+                      Text('Galería'),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ]),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  //Contenido de cargue mientras se selecciona y recorta la foto
+  /// Contenido de content mientras carga
   Widget loadingWidget() {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      child: Center(
-        child: CircularProgressIndicator(),
-      ),
+    return Center(
+      child: CircularProgressIndicator(),
     );
   }
 
