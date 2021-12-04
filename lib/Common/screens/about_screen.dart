@@ -28,7 +28,7 @@ class AboutScreen extends StatelessWidget {
               ),
             ),
             Text(
-              'Versión 1.2.0',
+              'Versión 1.2.1',
               style: TextStyle(color: Colors.black38),
             ),
           ],

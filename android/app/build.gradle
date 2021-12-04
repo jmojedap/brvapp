@@ -13,12 +13,12 @@ if (flutterRoot == null) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '3'
+    flutterVersionCode = '4'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '1.2'
+    flutterVersionName = '1.2.1'
 }
 
 apply plugin: 'com.android.application'
@@ -55,12 +55,20 @@ android {
            storePassword keystoreProperties['storePassword']
        }
    }
+
+    // Agregado 2021-12-04
+    // Ver versión en android studio tools sdk manager sdk tools  show package details
+   ndkVersion "23.1.7779620"    //Agregado 2021-12-04
+
    buildTypes {
        release {
            signingConfig signingConfigs.release
+           // Agregado 2021-12-04
+           ndk {
+                debugSymbolLevel 'SYMBOL_TABLE'
+            }
        }
    }
-
 }
 
 flutter {
